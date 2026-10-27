@@ -1,0 +1,75 @@
+[
+  {
+    "id": "pmfby",
+    "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "hindiName": "प्रधानमंत्री फसल बीमा योजना",
+    "category": "insurance",
+    "implementingAgency": "Ministry of Agriculture & Farmers Welfare, Govt of India",
+    "briefDescription": "Comprehensive crop insurance scheme providing financial support to farmers suffering crop loss/damage arising out of non-preventable natural risks.",
+    "keyBenefits": [
+      "Extremely low premium: Only 2% for Kharif, 1.5% for Rabi, and 5% for commercial/horticultural crops",
+      "Full sum insured payout without capping or reduction in sum insured",
+      "Localized calamity coverage for hailstorm, landslide, inundation, and post-harvest cyclone damage"
+    ],
+    "eligibilitySummary": [
+      "All farmers including sharecroppers and tenant farmers growing notified crops in notified areas",
+      "Must have insurable interest in the insured crop",
+      "Crop loss intimation must be submitted within 72 hours of localized calamity"
+    ],
+    "documentsRequired": [
+      "Aadhaar Card",
+      "Land Ownership Document (Khasra / Khatauni / Jamabandi copy)",
+      "Sowing Certificate issued by Patwari / Village Agriculture Extension Officer",
+      "Bank Account Passbook copy with active IFSC code",
+      "Crop Loss Photograph with Geotag"
+    ],
+    "applicationProcedure": "Submit claim intimation within 72 hours through the National Crop Insurance Portal (pmfby.gov.in), Crop Insurance Mobile App, or Toll-Free Helpline 14447.",
+    "officialPortalUrl": "https://pmfby.gov.in",
+    "tollFreeHelpline": "14447"
+  },
+  {
+    "id": "pm_kisan",
+    "name": "PM-KISAN Samman Nidhi",
+    "hindiName": "पीएम किसान सम्मान निधि",
+    "category": "welfare",
+    "implementingAgency": "Department of Agriculture and Farmers Welfare",
+    "briefDescription": "Income support scheme providing ₹6,000 per year in three equal instalments of ₹2,000 directly into the bank accounts of all landholding farmers families.",
+    "keyBenefits": [
+      "Direct Benefit Transfer (DBT) of ₹6,000 annually",
+      "Zero middleman intervention",
+      "Assists in procuring farm inputs (seeds, fertilizer, diesel) ahead of sowing cycles"
+    ],
+    "eligibilitySummary": [
+      "All landholder farmer families having cultivable landholding in their names",
+      "Mandatory eKYC completion through OTP or facial biometric authentication",
+      "Institutional landholders and high-income tax payees are excluded"
+    ],
+    "documentsRequired": [
+      "Aadhaar Card linked with active mobile number",
+      "Land Revenue Records (Jamabandi / ROR)",
+      "Bank Account details linked with NPCI / Aadhaar"
+    ],
+    "applicationProcedure": "Self-registration available on pmkisan.gov.in under 'Farmers Corner' or through nearest Common Service Centre (CSC).",
+    "officialPortalUrl": "https://pmkisan.gov.in",
+    "tollFreeHelpline": "155261 / 1800-11-5526"
+  },
+  {
+    "id": "soil_health_card",
+    "name": "Soil Health Card Scheme",
+    "hindiName": "मृदा स्वास्थ्य कार्ड योजना",
+    "category": "input_subsidy",
+    "implementingAgency": "State Agriculture Departments & ICAR",
+    "briefDescription": "Issues soil health cards to farmers every 2 years indicating status of 12 vital macro and micro-nutrients to reduce fertilizer overdose.",
+    "keyBenefits": [
+      "Customized dosage guidance for Nitrogen, Phosphorus, Potassium, Secondary & Micronutrients",
+      "Estimated 15-25% reduction in chemical fertilizer cost through targeted application",
+      "Soil physical parameters (pH, EC, Organic Carbon) assessment"
+    ],
+    "eligibilitySummary": ["Open to all operational agricultural landholders across India."],
+    "documentsRequired": ["Farmer Identity Proof", "Field Geo-coordinates or Survey/Khasra number"],
+    "applicationProcedure": "Contact the nearest Block Agriculture Officer or Krishi Vigyan Kendra (KVK) for soil sample collection.",
+    "officialPortalUrl": "https://soilhealth.dac.gov.in",
+    "tollFreeHelpline": "1800-180-1551"
+  }
+]
+

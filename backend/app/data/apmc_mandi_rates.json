@@ -1,0 +1,81 @@
+[
+  {
+    "mandiName": "Karnal APMC Grain Market",
+    "district": "Karnal",
+    "state": "Haryana",
+    "commodity": "Wheat",
+    "variety": "HD-2967 / Dara",
+    "arrivalDate": "Today",
+    "minPricePerQtl": 2425,
+    "modalPricePerQtl": 2480,
+    "maxPricePerQtl": 2550,
+    "marketArrivalTonnes": 140.0,
+    "distanceKm": 12.0
+  },
+  {
+    "mandiName": "Khanna Mandi (Asia's Largest)",
+    "district": "Ludhiana",
+    "state": "Punjab",
+    "commodity": "Wheat",
+    "variety": "PBW-343 / Sharbati",
+    "arrivalDate": "Today",
+    "minPricePerQtl": 2435,
+    "modalPricePerQtl": 2495,
+    "maxPricePerQtl": 2580,
+    "marketArrivalTonnes": 320.0,
+    "distanceKm": 45.0
+  },
+  {
+    "mandiName": "Alwar Mandi Yard",
+    "district": "Alwar",
+    "state": "Rajasthan",
+    "commodity": "Mustard",
+    "variety": "Pusa Bold 42% Oil",
+    "arrivalDate": "Today",
+    "minPricePerQtl": 5650,
+    "modalPricePerQtl": 5850,
+    "maxPricePerQtl": 6020,
+    "marketArrivalTonnes": 85.0,
+    "distanceKm": 18.0
+  },
+  {
+    "mandiName": "Indore Krishi Upaj Mandi",
+    "district": "Indore",
+    "state": "Madhya Pradesh",
+    "commodity": "Soybean",
+    "variety": "JS-9560 Yellow",
+    "arrivalDate": "Today",
+    "minPricePerQtl": 4550,
+    "modalPricePerQtl": 4720,
+    "maxPricePerQtl": 4890,
+    "marketArrivalTonnes": 160.0,
+    "distanceKm": 25.0
+  },
+  {
+    "mandiName": "Taraori Grain Market",
+    "district": "Karnal",
+    "state": "Haryana",
+    "commodity": "Paddy",
+    "variety": "Basmati 1121 Super",
+    "arrivalDate": "Today",
+    "minPricePerQtl": 3800,
+    "modalPricePerQtl": 3950,
+    "maxPricePerQtl": 4120,
+    "marketArrivalTonnes": 210.0,
+    "distanceKm": 8.0
+  },
+  {
+    "mandiName": "Rajkot Marketing Yard",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "commodity": "Cotton",
+    "variety": "Shankar-6 Long Staple",
+    "arrivalDate": "Today",
+    "minPricePerQtl": 7150,
+    "modalPricePerQtl": 7380,
+    "maxPricePerQtl": 7600,
+    "marketArrivalTonnes": 95.0,
+    "distanceKm": 30.0
+  }
+]
+

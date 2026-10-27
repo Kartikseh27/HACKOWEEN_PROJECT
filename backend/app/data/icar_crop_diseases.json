@@ -1,0 +1,131 @@
+{
+  "wheat": [
+    {
+      "name": "Nitrogen Deficiency (Chlorosis)",
+      "scientificName": "Abiotic Nitrogen Stress",
+      "category": "nutrient",
+      "symptomTriggers": ["yellowing", "chlorosis", "paler", "lower leaves", "stunted"],
+      "evidence": [
+        "Uniform yellowing beginning at the tips of older lower leaves (V-shaped pattern)",
+        "No fungal spore pustules or powdery dusting on white cloth rub test",
+        "Overall stunted tillering and pale light green canopy appearance"
+      ],
+      "recommendedActions": [
+        "Foliar spray 2% Urea solution (20g Urea per 1 litre of clean water) during late afternoon hours",
+        "Top-dress 30-35 kg/acre Urea after immediate light irrigation once soil moisture permits walking",
+        "Incorporate well-rotted vermicompost (5 quintals/acre) in subsequent Rabi preparation"
+      ],
+      "preventivePractices": [
+        "Split nitrogen into 3 doses: 1/3 at sowing, 1/3 at CRI stage (21 days), and 1/3 at tillering (42 days)",
+        "Conduct pre-sowing soil test for available nitrogen"
+      ],
+      "warningSigns": ["Severe tip scorching", "Failure to develop secondary tillers"],
+      "expertInspectionAdvised": false
+    },
+    {
+      "name": "Stripe Rust / Yellow Rust",
+      "scientificName": "Puccinia striiformis f. sp. tritici",
+      "category": "fungal",
+      "symptomTriggers": ["yellow rust", "yellow powder", "rust pustules", "stripes", "humid", "cool"],
+      "evidence": [
+        "Linear yellow-orange powdery pustules formed along leaf veins",
+        "Bright yellow urediniospores rub off easily onto fingers or white cotton cloth",
+        "Favored by persistent morning dew, cloudiness, and cool daytime temperatures (10-20°C)"
+      ],
+      "recommendedActions": [
+        "Immediately isolate affected patches and avoid walking from diseased to healthy fields",
+        "Spray Propiconazole 25% EC (Tilt) @ 200 ml OR Tebuconazole 25.9% EC @ 200 ml in 200 L water per acre",
+        "Repeat spray after 12-15 days only if weather remains overcast and new active stripes emerge"
+      ],
+      "preventivePractices": [
+        "Cultivate resistant wheat varieties recommended for NWPZ (e.g. DBW-187, DBW-303, HD-3226)",
+        "Avoid late sowing beyond November 25 in sub-mountainous tracts of Punjab and Haryana"
+      ],
+      "warningSigns": ["Pustules turning brownish-black (teliospores)", "Rapid field-scale patch enlargement"],
+      "expertInspectionAdvised": true
+    },
+    {
+      "name": "Loose Smut of Wheat",
+      "scientificName": "Ustilago tritici",
+      "category": "fungal",
+      "symptomTriggers": ["black powder", "loose smut", "earhead", "condwa", "kaali baali"],
+      "evidence": [
+        "Entire earhead transformed into black powdery spore mass replacing healthy grains",
+        "Silvery membrane surrounding the smutted spike bursts upon ear emergence"
+      ],
+      "recommendedActions": [
+        "Carefully rogue out diseased ears in polythene bags to prevent wind dispersal and bury deep",
+        "Do not use seed from this harvest for next season's crop"
+      ],
+      "preventivePractices": [
+        "Mandatory pre-sowing seed treatment with Carboxin 37.5% + Thiram 37.5% (Vitavax Power) @ 2.5 g/kg seed",
+        "Use certified breeder/foundation seed from National Seeds Corporation"
+      ],
+      "warningSigns": ["Wind-borne spread to adjacent flowering wheat spikes"],
+      "expertInspectionAdvised": false
+    }
+  ],
+  "mustard": [
+    {
+      "name": "Alternaria Leaf Blight",
+      "scientificName": "Alternaria brassicae",
+      "category": "fungal",
+      "symptomTriggers": ["brown spots", "blight", "target spot", "jhulsa", "concentric rings"],
+      "evidence": [
+        "Circular to oval brown necrotic lesions on leaves with characteristic concentric rings",
+        "Lesions coalesce causing leaf blight, defoliation, and stem spotting during foggy weather"
+      ],
+      "recommendedActions": [
+        "Foliar spray Mancozeb 75% WP (Indofil M-45) @ 500-600 g in 200 litres water per acre",
+        "Apply 10% boiled neem leaf extract as an organic bio-fungicide during early vegetative stage"
+      ],
+      "preventivePractices": [
+        "Seed treatment with Apron 35 SD @ 6 g/kg or Trichoderma viride @ 5 g/kg seed",
+        "Maintain adequate crop spacing (30 x 10 cm) to ensure good aeration"
+      ],
+      "warningSigns": ["Pod infection causing premature shrivelled seeds"],
+      "expertInspectionAdvised": false
+    },
+    {
+      "name": "White Rust / Blister",
+      "scientificName": "Albugo candida",
+      "category": "fungal",
+      "symptomTriggers": ["white pustules", "white rust", "staghead", "floral malformation"],
+      "evidence": [
+        "Prominent white or creamy chalk-like raised blisters on leaf undersides",
+        "Floral malformation resulting in swollen, sterile 'staghead' spikes"
+      ],
+      "recommendedActions": [
+        "Spray Metalaxyl 8% + Mancozeb 64% (Ridomil MZ) @ 500 g per 200 litres water per acre",
+        "Remove and destroy malformed staghead floral spikes"
+      ],
+      "preventivePractices": ["Sow early in October before temperatures dip below 18°C"],
+      "warningSigns": ["Hypertrophy of floral stems"],
+      "expertInspectionAdvised": true
+    }
+  ],
+  "paddy": [
+    {
+      "name": "Yellow Stem Borer",
+      "scientificName": "Scirpophaga incertulas",
+      "category": "pest",
+      "symptomTriggers": ["stem borer", "dead heart", "white earhead", "hole in stem"],
+      "evidence": [
+        "Central shoot withers and dries up causing 'Dead Heart' in tillering stage",
+        "Panicle turns completely white and grainless ('White Earhead') during reproductive stage",
+        "Small entry holes plugged with excreta visible near base of the stem"
+      ],
+      "recommendedActions": [
+        "Broadcast Chlorantraniliprole 0.4% GR (Ferterra) @ 4 kg/acre mixed with dry sand",
+        "Install 4-5 sex pheromone traps per acre for pest monitoring"
+      ],
+      "preventivePractices": [
+        "Clip seedling leaf tips before nursery transplanting to remove egg masses",
+        "Avoid excessive nitrogen application which makes succulent stems prone to attack"
+      ],
+      "warningSigns": ["More than 5% dead hearts or 1 moth per square metre"],
+      "expertInspectionAdvised": false
+    }
+  ]
+}
+
