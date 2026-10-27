@@ -37,28 +37,40 @@ Follow the one-time local admin setup (create local credentials or skip telemetr
 
 ## 3. Import the KISAN CULTURE Agent Workflow
 
-1. In the n8n sidebar, click **Workflows**.
-2. Click the **three dots menu (`...`)** in the top right, then select **Import from File**.
-3. Select the workflow file from your workspace:
-   ```
-   n8n/kisan-culture-agent.json
-   ```
-4. The complete agricultural multi-tool agent graph will appear:
-   - **Webhook Trigger**: Listens at `POST /webhook/kisan-agent`
-   - **Input Validator & Context Normalizer**: Validates prompt, handles language (EN/HI), and extracts agricultural variables.
-   - **Intent Classifier & Tool Router**: Determines active farmer intent across single or multi-tool workflows.
-   - **Crop Pathology Tool**: Matches symptoms against ICAR guidelines and validates leaf image limits.
-   - **Agro-Meteorological Tool**: Evaluates live weather, wind velocity, and spray window safety.
-   - **Soil & Nutrient Management Tool**: Interprets NPK, pH, and electrical conductivity values.
-   - **Mandi Economics & Profit Tool**: Performs deterministic profit calculation:
-     $$\text{Gross Revenue} = \text{Quantity} \times \text{Price}$$
-     $$\text{Net Profit} = \text{Gross Revenue} - \text{Total Costs}$$
-     $$\text{Break-Even Price} = \frac{\text{Total Costs}}{\text{Quantity}}$$
-   - **Government Scheme & Claim Advisory**: Provides scheme guidelines, subsidy benefits, and documentation checklists.
-   - **Farmer Synthesis Engine**: Combines all tool results into a structured, empathetic, bilingual response.
-   - **Respond to Webhook**: Returns the standardized schema back to the FastAPI backend.
+You have two ready-to-import workflows depending on whether you want an **Autonomous n8n LangChain AI Agent** or a **Deterministic Rule-Based Router**:
 
-5. Click **Save**, and toggle the switch in the top right to **Active**.
+### Option 1 (Recommended for n8n AI): LangChain AI Agent Workflow
+File: **`n8n/kisan-culture-ai-agent.json`**
+
+1. In the n8n sidebar, click **Workflows** -> click **`...`** (top right) -> **Import from File**.
+2. Select `n8n/kisan-culture-ai-agent.json`.
+3. The LangChain AI graph will load:
+   - **Webhook Trigger**: Receives farmer queries from FastAPI / Frontend at `POST /webhook/kisan-agent`.
+   - **Validate Input**: Extracts farmer location, crop context, and language.
+   - **Kisan AI Agent (`@n8n/n8n-nodes-langchain.agent`)**: Central autonomous agent with agricultural system prompt.
+   - **Google Gemini Chat Model (`@n8n/n8n-nodes-langchain.lmChatGoogleGemini`)**: Connected to the agent's `ai_languageModel` port.
+   - **Window Buffer Memory (`@n8n/n8n-nodes-langchain.memoryBufferWindow`)**: Remembers recent conversation turns.
+   - **5 Sub-Tool Nodes (`@n8n/n8n-nodes-langchain.toolCustom`)**:
+     * `crop_health_tool`: Diagnoses diseases based on ICAR rules.
+     * `weather_spray_tool`: Evaluates spray windows & wind velocity.
+     * `soil_water_tool`: Evaluates pH & CRI irrigation timings.
+     * `mandi_profit_tool`: Deterministic arithmetic ($\text{Net Profit} = \text{Gross} - \text{Costs}$).
+     * `government_schemes_tool`: PMFBY 72h loss claim documentation checklists.
+   - **Format Response**: Formats AI Agent synthesis into the Kisan Culture schema.
+   - **Respond to Webhook**: Returns results instantly.
+
+4. **Add your Gemini API Key in n8n**:
+   - Double-click the **Google Gemini Chat Model** node.
+   - Under *Credential to connect with*, click **Create New Credential**.
+   - Paste your Gemini API key (e.g. from Google AI Studio).
+   - Click **Save**.
+5. Toggle the workflow to **Active**.
+
+---
+
+### Option 2: Deterministic Rule-Based Workflow
+File: **`n8n/kisan-culture-agent.json`**
+A standalone JavaScript-powered multi-tool workflow that executes the 5 tools deterministically without requiring external LLM API credentials in n8n. Perfect for air-gapped or high-speed local deployments.
 
 ---
 
@@ -114,3 +126,4 @@ If n8n is ever offline, stopped, or times out:
 2. The query is seamlessly rerouted to the built-in **Native Python Universal Agent**.
 3. A transparent note is added to the execution plan (`Fallback: n8n unreachable, routed through native agent engine`).
 4. The farmer **never sees a broken UI or 500 error**.
+

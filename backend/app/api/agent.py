@@ -115,6 +115,10 @@ def get_engine_status():
             "webhookUrl": settings.N8N_WEBHOOK_URL or "Not Configured (Optional)",
             "timeoutSeconds": settings.N8N_TIMEOUT_SECONDS,
             "status": "ready" if n8n_client.is_configured else "standby_fallback_active",
-            "importableWorkflow": "n8n/kisan-culture-agent.json",
+            "importableWorkflow": "n8n/kisan-culture-ai-agent.json",
+            "availableWorkflows": [
+                "n8n/kisan-culture-ai-agent.json",
+                "n8n/kisan-culture-agent.json"
+            ],
         }
     }
