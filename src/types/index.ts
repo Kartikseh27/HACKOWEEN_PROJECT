@@ -191,11 +191,16 @@ export interface MandiCalculationInput {
 }
 
 export interface MandiProfitResult {
+  commodity?: string;
+  quantityQuintals?: number;
   grossRevenue: number;
   totalExpenses: number;
   netReturn: number;
   effectivePricePerQtl: number;
   breakEvenYieldPrice: number;
+  breakEvenPricePerQtl?: number;
+  costBreakdown?: Record<string, number>;
+  advisoryNotes?: string[];
   comparisonMandis: Array<{
     mandiName: string;
     modalPrice: number;

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { FarmerReport, Language } from '../../types';
-import { X, Printer, ShieldCheck, Sprout, Calendar, MapPin, CheckCircle2 } from 'lucide-react';
+import { X, Printer, ShieldCheck, Sprout, Calendar, MapPin, CheckCircle2, Download } from 'lucide-react';
 
 interface PrintableReportModalProps {
   report: FarmerReport | null;
@@ -34,6 +34,15 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
             <span className="font-bold text-sm">KISAN CULTURE Official Agricultural Dossier</span>
           </div>
           <div className="flex items-center gap-2">
+            <a
+              href={`/api/reports/${report.reportId}/download`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-emerald-300 text-xs font-semibold rounded-lg border border-stone-700 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF (A4)</span>
+            </a>
             <button
               onClick={handlePrint}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-colors"

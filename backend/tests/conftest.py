@@ -13,7 +13,7 @@ if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
 from main import app
-from app.database import init_db
+from app.database import init_db, SessionLocal
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -27,4 +27,14 @@ def client():
     """Provides a fresh TestClient for each test."""
     with TestClient(app) as test_client:
         yield test_client
+
+
+@pytest.fixture
+def db_session():
+    """Provides a fresh database session for service testing."""
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
 

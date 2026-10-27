@@ -4,9 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx server.ts",
+    "dev": "vite",
     "frontend": "vite",
     "backend": "cd backend && venv/bin/uvicorn main:app --reload --port 8000",
+    "test:backend": "cd backend && venv/bin/pytest -v",
+    "test:demo": "cd backend && venv/bin/python tests/verify_hackathon_demo.py",
+    "mock-server": "tsx server.ts",
     "start": "node server.ts",
     "build": "vite build",
     "preview": "vite preview",

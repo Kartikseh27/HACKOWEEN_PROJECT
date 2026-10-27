@@ -1,0 +1,382 @@
+{
+  "name": "Kisan Culture - Autonomous Agricultural AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kisan-agent",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-trigger",
+      "name": "Farmer Query Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ],
+      "webhookId": "kisan-agent-webhook-01"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract incoming farmer inquiry and detect primary intent\nconst body = $json.body || $json;\nconst prompt = (body.prompt || body.message || '').trim();\nconst crop = body.cropContext || body.crop || 'Wheat';\nconst state = body.state || (body.location && body.location.state) || 'Haryana';\nconst district = body.district || (body.location && body.location.district) || 'Karnal';\nconst lang = body.language || 'en';\n\nconst pLower = prompt.toLowerCase();\nlet intent = 'orchestrate'; // Default to full multi-tool orchestrator\n\nconst isCrop = /yellow|पीला|leaf|पत्ती|disease|रोग|rust|रतुआ|blight|झुलसा|pest|कीड़ा|spot|धब्बा/.test(pLower);\nconst isWeather = /weather|मौसम|rain|बारिश|spray|छिड़काव|wind|हवा|forecast|पूर्वानुमान/.test(pLower);\nconst isMandi = /mandi|मंडी|price|भाव|profit|मुनाफा|sell|बेचना|quintal|क्विंटल|rate/.test(pLower);\nconst isSoil = /soil|मिट्टी|khad|खाद|fertilizer|urea|यूरिया|dap|ph|saline|alkaline/.test(pLower);\nconst isSchemes = /scheme|योजना|pmfby|बीमा|claim|क्लेम|loss|नुकसान|hailstorm|ओलावृष्टि/.test(pLower);\n\n// Single-domain routing or multi-tool orchestrator\nconst matchCount = [isCrop, isWeather, isMandi, isSoil, isSchemes].filter(Boolean).length;\n\nif (matchCount > 1) {\n  intent = 'orchestrate';\n} else if (isCrop) {\n  intent = 'crop_health';\n} else if (isWeather) {\n  intent = 'weather';\n} else if (isMandi) {\n  intent = 'mandi';\n} else if (isSoil) {\n  intent = 'soil';\n} else if (isSchemes) {\n  intent = 'schemes';\n}\n\n// Extract quantities and pricing if present\nlet quantityQuintals = 50;\nconst qMatch = pLower.match(/(\\d+(?:\\.\\d+)?)\\s*(?:quintals?|qtl|क्विंटल)/);\nif (qMatch) quantityQuintals = parseFloat(qMatch[1]);\n\nlet expectedPrice = 2450;\nconst pMatch = pLower.match(/(?:rs\\.?|inr|₹|भाव|दर|रेट|at)\\s*[:=]?\\s*(\\d{3,5})/);\nif (pMatch) expectedPrice = parseFloat(pMatch[1]);\n\nreturn [{\n  json: {\n    prompt,\n    crop,\n    state,\n    district,\n    lang,\n    intent,\n    quantityQuintals,\n    expectedPrice,\n    rawPayload: body\n  }\n}];"
+      },
+      "id": "node-intent-router",
+      "name": "Parse Query & Classify Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "orchestrate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "mandi",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "weather",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "crop_health",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "node-switch",
+      "name": "Tool Intent Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/agent/orchestrate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": {{ JSON.stringify($json.prompt) }},\n  \"location\": {\n    \"state\": {{ JSON.stringify($json.state) }},\n    \"district\": {{ JSON.stringify($json.district) }}\n  },\n  \"cropContext\": {{ JSON.stringify($json.crop) }},\n  \"language\": {{ JSON.stringify($json.lang) }}\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "node-http-orchestrate",
+      "name": "Call Universal Agent Orchestrator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/mandi/calculate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"commodity\": {{ JSON.stringify($json.crop) }},\n  \"quantityQuintals\": {{ $json.quantityQuintals }},\n  \"expectedSellingPricePerQtl\": {{ $json.expectedPrice }},\n  \"transportCostPerQtl\": 30.0,\n  \"loadingUnloadingCostPerQtl\": 15.0,\n  \"mandiCessPercentage\": 1.0\n}",
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "node-http-mandi",
+      "name": "Call Mandi Profit Engine",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://localhost:8000/api/weather/lookup?district={{ encodeURIComponent($json.district) }}&state={{ encodeURIComponent($json.state) }}&crop={{ encodeURIComponent($json.crop) }}",
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "node-http-weather",
+      "name": "Call Weather Guardian API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/crop/analyze",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"crop\": {{ JSON.stringify($json.crop) }},\n  \"state\": {{ JSON.stringify($json.state) }},\n  \"district\": {{ JSON.stringify($json.district) }},\n  \"symptoms\": [\"Leaf chlorosis / yellowing\"],\n  \"durationDays\": 5,\n  \"severity\": \"moderate\",\n  \"description\": {{ JSON.stringify($json.prompt) }}\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "node-http-crop",
+      "name": "Call Crop Health Intelligence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format consolidated response for webhook caller\nconst item = $json;\n\nlet responseBody = {};\n\nif (item.integratedSynthesis) {\n  // Full agent result\n  responseBody = {\n    status: 'success',\n    workflow: 'n8n-kisan-culture-agent',\n    requestId: item.requestId,\n    timestamp: item.timestamp,\n    toolsInvoked: item.toolsInvoked,\n    synthesis: item.integratedSynthesis,\n    actionRoadmap: item.actionRoadmap,\n    plan: item.plan,\n    toolOutputs: item.toolOutputs\n  };\n} else if (item.grossRevenue !== undefined) {\n  // Mandi profit result\n  responseBody = {\n    status: 'success',\n    workflow: 'n8n-kisan-culture-agent',\n    toolsInvoked: ['mandi_advisor'],\n    synthesis: `Mandi Calculation: For ${item.quantityQuintals} qtl of ${item.commodity}, Gross Revenue is ₹${item.grossRevenue.toLocaleString('en-IN')}, Total Deductions are ₹${item.totalExpenses.toLocaleString('en-IN')}, and Net In-Hand Realization is ₹${item.netReturn.toLocaleString('en-IN')} (Effective: ₹${item.effectivePricePerQtl}/qtl).`,\n    calculation: item\n  };\n} else if (item.current && item.current.temperatureC !== undefined) {\n  // Weather result\n  responseBody = {\n    status: 'success',\n    workflow: 'n8n-kisan-culture-agent',\n    toolsInvoked: ['weather_guardian'],\n    synthesis: `Weather Intelligence for ${item.district}: Current temp is ${item.current.temperatureC}°C, wind speed is ${item.current.windSpeedKmph} km/h (${item.current.source}). Favorable spray window active after morning dew dries.`,\n    telemetry: item\n  };\n} else if (item.rankedCauses) {\n  // Crop health result\n  responseBody = {\n    status: 'success',\n    workflow: 'n8n-kisan-culture-agent',\n    toolsInvoked: ['crop_health'],\n    synthesis: `Crop Pathology for ${item.crop}: Top identified cause is ${item.rankedCauses[0]?.name} (${item.rankedCauses[0]?.confidenceScore}% confidence). ${item.immediateSteps?.[0] || ''}`,\n    diagnosis: item\n  };\n} else {\n  responseBody = {\n    status: 'success',\n    workflow: 'n8n-kisan-culture-agent',\n    data: item\n  };\n}\n\nreturn [{ json: responseBody }];"
+      },
+      "id": "node-formatter",
+      "name": "Consolidate & Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Powered-By",
+                "value": "KISAN CULTURE n8n Automation Engine"
+              }
+            ]
+          }
+        }
+      },
+      "id": "node-webhook-response",
+      "name": "Send Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1460,
+        340
+      ]
+    }
+  ],
+  "connections": {
+    "Farmer Query Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Query & Classify Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Query & Classify Intent": {
+      "main": [
+        [
+          {
+            "node": "Tool Intent Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Intent Switch": {
+      "main": [
+        [
+          {
+            "node": "Call Universal Agent Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Mandi Profit Engine",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Weather Guardian API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Crop Health Intelligence",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Universal Agent Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Universal Agent Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Consolidate & Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Mandi Profit Engine": {
+      "main": [
+        [
+          {
+            "node": "Consolidate & Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Weather Guardian API": {
+      "main": [
+        [
+          {
+            "node": "Consolidate & Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Crop Health Intelligence": {
+      "main": [
+        [
+          {
+            "node": "Consolidate & Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidate & Format Response": {
+      "main": [
+        [
+          {
+            "node": "Send Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "kc-n8n-workflow-v1-0",
+  "meta": {
+    "instanceId": "kisan-culture-local-mac",
+    "templateCredsSetupCompleted": true
+  },
+  "id": "KisanCultureAgentWorkflow"
+}
+

@@ -6,7 +6,7 @@
 import React from 'react';
 import { FarmerReport, Language } from '../../types';
 import { translations } from '../../i18n/translations';
-import { FileText, Printer, Trash2, Calendar, MapPin, Eye, Sprout } from 'lucide-react';
+import { FileText, Printer, Trash2, Calendar, MapPin, Eye, Sprout, Download } from 'lucide-react';
 
 interface ReportsViewProps {
   reports: FarmerReport[];
@@ -88,13 +88,25 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
               </div>
 
               <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                <button
-                  onClick={() => onOpenReport(report)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 transition-colors"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>{t.reports.viewReport}</span>
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => onOpenReport(report)}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 transition-colors"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>{t.reports.viewReport}</span>
+                  </button>
+                  <a
+                    href={`/api/reports/${report.reportId}/download`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-emerald-800 transition-colors"
+                    title="Download Vector PDF"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>PDF</span>
+                  </a>
+                </div>
 
                 <button
                   onClick={() => onDeleteReport(report.reportId)}

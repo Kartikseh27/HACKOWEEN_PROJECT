@@ -4,12 +4,19 @@ Loads environment variables safely using Pydantic Settings.
 """
 
 import os
+from pathlib import Path
 from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=[str(ENV_PATH), ".env"],
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
 
     APP_NAME: str = "KISAN CULTURE Backend"
     VERSION: str = "1.0.0"

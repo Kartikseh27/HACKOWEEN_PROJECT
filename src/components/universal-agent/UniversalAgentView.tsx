@@ -33,6 +33,12 @@ import {
   CloudSun,
   TrendingUp,
   FileBadge,
+  Terminal,
+  Code,
+  ChevronDown,
+  ChevronUp,
+  ShieldCheck,
+  Calculator,
 } from 'lucide-react';
 
 interface UniversalAgentViewProps {
@@ -69,6 +75,8 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [executionResult, setExecutionResult] = useState<UniversalAgentExecutionResult | null>(null);
   const [approvedActions, setApprovedActions] = useState<string[]>([]);
+  const [showRawTrace, setShowRawTrace] = useState(false);
+  const [selectedTraceTool, setSelectedTraceTool] = useState<ToolName | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file uploads with preview
@@ -338,12 +346,105 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
             </button>
           </div>
 
-          {/* Example prompt pills */}
-          <div className="pt-3">
-            <div className="text-[11px] font-semibold text-stone-500 mb-2">
-              {language === 'en' ? 'Click a real farmer scenario to test orchestration:' : 'एजेंट का परीक्षण करने के लिए उदाहरण चुनें:'}
+          {/* Hackathon Demonstrable Scenarios */}
+          <div className="pt-3 border-t border-stone-100">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                {language === 'en' ? 'Hackathon Verification Scenarios (1-Click Test)' : 'हैकाथॉन सत्यापन परिदृश्य (एक-क्लिक परीक्षण)'}
+              </span>
+              <span className="text-[10px] text-stone-400 font-mono">Live Tool Calls</span>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const q = 'My wheat leaves have yellow spots and drying leaf tips. What disease is this and what should I do?';
+                  setPrompt(q);
+                  setCropContext('Wheat');
+                  handleExecuteAgent(q);
+                }}
+                className="text-left p-3 rounded-lg border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800 uppercase mb-1">
+                  <span className="flex items-center gap-1">
+                    <Leaf className="w-3 h-3 text-emerald-700" />
+                    Scenario 1: Crop Pathology
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-emerald-200 font-mono">ICAR Rules</span>
+                </div>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Yellow spots & drying tips on wheat</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">Evidence-based ranked diagnosis & IPM actions</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const q = 'What is the weather forecast for Karnal and can I safely spray pesticide tomorrow morning?';
+                  setPrompt(q);
+                  setDistrict('Karnal');
+                  setState('Haryana');
+                  handleExecuteAgent(q);
+                }}
+                className="text-left p-3 rounded-lg border border-sky-200 bg-sky-50/60 hover:bg-sky-100/70 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-[10px] font-bold text-sky-800 uppercase mb-1">
+                  <span className="flex items-center gap-1">
+                    <CloudSun className="w-3 h-3 text-sky-700" />
+                    Scenario 2: Weather & Spray
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-sky-200 font-mono">Open-Meteo</span>
+                </div>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Karnal forecast & spray window safety</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">Wind velocity, precipitation risk, & humidity check</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const q = 'I want to sell 100 quintals of wheat at Rs 2450 with Rs 30 transport and Rs 15 handling. What is my profit and break-even price?';
+                  setPrompt(q);
+                  setCropContext('Wheat');
+                  handleExecuteAgent(q);
+                }}
+                className="text-left p-3 rounded-lg border border-amber-200 bg-amber-50/60 hover:bg-amber-100/70 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-[10px] font-bold text-amber-800 uppercase mb-1">
+                  <span className="flex items-center gap-1">
+                    <Calculator className="w-3 h-3 text-amber-700" />
+                    Scenario 3: Mandi Economics
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-amber-200 font-mono">Deterministic Math</span>
+                </div>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">100 qtl @ ₹2450 with ₹30 transport</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">Revenue, cess, freight deductions & break-even</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const q = 'My wheat crop has yellow patches, rain is expected, and mandi prices are falling. What should I do first and give me a profit breakdown for 50 quintals?';
+                  setPrompt(q);
+                  setCropContext('Wheat');
+                  handleExecuteAgent(q);
+                }}
+                className="text-left p-3 rounded-lg border border-purple-200 bg-purple-50/60 hover:bg-purple-100/70 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-[10px] font-bold text-purple-800 uppercase mb-1">
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-700" />
+                    Scenario 4: Multi-Tool Agent
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-purple-200 font-mono">3 Tools Joint</span>
+                </div>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Disease + Weather + Mandi fall</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">Autonomous orchestration & priority roadmap</p>
+              </button>
+            </div>
+
             <div className="space-y-1.5">
+              <span className="text-[10px] font-semibold text-stone-400 block mb-1">More Farmer Scenarios:</span>
               {t.universalAgent.examplePrompts.map((example, idx) => (
                 <button
                   key={idx}
@@ -352,10 +453,10 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
                     setPrompt(example);
                     handleExecuteAgent(example);
                   }}
-                  className="w-full text-left p-2.5 text-xs text-stone-700 bg-stone-50 hover:bg-emerald-50 hover:text-emerald-950 border border-stone-200 rounded-lg transition-colors flex items-center justify-between group"
+                  className="w-full text-left p-2 text-xs text-stone-600 bg-stone-50 hover:bg-emerald-50 hover:text-emerald-950 border border-stone-200 rounded-lg transition-colors flex items-center justify-between group"
                 >
-                  <span className="line-clamp-1">{example}</span>
-                  <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-emerald-800 shrink-0 ml-2" />
+                  <span className="line-clamp-1 text-[11px]">{example}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-emerald-800 shrink-0 ml-2" />
                 </button>
               ))}
             </div>
@@ -406,36 +507,244 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
             </div>
           </div>
 
-          {/* 2. Specialized Tools Invoked */}
+          {/* 2. Specialized Tools Invoked & Live Execution Trace Inspector */}
           <div className="bg-white rounded-xl p-6 border border-stone-200">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
-                <Layers className="w-4 h-4 text-emerald-800" />
-                <span>{t.universalAgent.toolsInvokedTitle}</span>
-              </h2>
-              <span className="text-xs text-stone-500">
-                {executionResult.toolsInvoked.length} tools dynamically selected
-              </span>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-emerald-800" />
+                  <span>{t.universalAgent.toolsInvokedTitle}</span>
+                </h2>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Inspect live outputs returned by each executed tool function
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md">
+                  {executionResult.toolsInvoked.length} Tools Executed
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowRawTrace((prev) => !prev)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-md transition-colors"
+                >
+                  <Code className="w-3.5 h-3.5 text-stone-500" />
+                  <span>{showRawTrace ? 'Hide Raw JSON' : 'Raw JSON Trace'}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {executionResult.toolsInvoked.map((tool) => (
-                <div
-                  key={tool}
-                  className="p-3 bg-emerald-50/50 border border-emerald-200/80 rounded-lg flex items-center gap-3 text-xs"
-                >
-                  <div className="p-2 bg-white rounded-md shadow-2xs border border-emerald-100">
-                    {getToolIcon(tool)}
-                  </div>
-                  <div>
-                    <span className="font-semibold text-stone-900 block capitalize">
-                      {tool.replace('_', ' ')}
+            {/* Tool Execution Cards */}
+            <div className="space-y-3">
+              {/* Mandi Advisor Detailed Trace */}
+              {executionResult.toolsInvoked.includes('mandi_advisor') && executionResult.toolOutputs.mandi && (
+                <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/30 text-xs">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-emerald-200/60">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-white rounded-md border border-emerald-200">
+                        <TrendingUp className="w-4 h-4 text-emerald-700" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-stone-900 text-sm">Mandi Price & Profit Advisor</span>
+                        <span className="text-[10px] text-emerald-700 block">Deterministic Python Arithmetic Engine</span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-full">
+                      Verified Calculations
                     </span>
-                    <span className="text-[10px] text-emerald-800">Executed & Verified</span>
                   </div>
+
+                  {executionResult.toolOutputs.mandi.calculation && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                      <div className="p-2 bg-white rounded-lg border border-emerald-100">
+                        <span className="text-[10px] text-stone-500 block">Quantity</span>
+                        <span className="font-bold text-stone-900 text-xs">
+                          {executionResult.toolOutputs.mandi.calculation.quantityQuintals} Quintals
+                        </span>
+                      </div>
+                      <div className="p-2 bg-white rounded-lg border border-emerald-100">
+                        <span className="text-[10px] text-stone-500 block">Gross Revenue</span>
+                        <span className="font-bold text-emerald-700 text-xs">
+                          ₹{executionResult.toolOutputs.mandi.calculation.grossRevenue.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                      <div className="p-2 bg-white rounded-lg border border-emerald-100">
+                        <span className="text-[10px] text-stone-500 block">Total Deductions</span>
+                        <span className="font-bold text-rose-700 text-xs">
+                          ₹{executionResult.toolOutputs.mandi.calculation.totalExpenses.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                      <div className="p-2 bg-white rounded-lg border border-emerald-100">
+                        <span className="text-[10px] text-stone-500 block">Net In-Hand Return</span>
+                        <span className="font-bold text-emerald-900 text-xs">
+                          ₹{executionResult.toolOutputs.mandi.calculation.netReturn.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )}
+
+              {/* Weather Guardian Detailed Trace */}
+              {executionResult.toolsInvoked.includes('weather_guardian') && executionResult.toolOutputs.weather && (
+                <div className="p-4 rounded-xl border border-sky-200 bg-sky-50/30 text-xs">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-sky-200/60">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-white rounded-md border border-sky-200">
+                        <CloudSun className="w-4 h-4 text-sky-700" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-stone-900 text-sm">Weather & Disaster Guardian</span>
+                        <span className="text-[10px] text-sky-700 block">
+                          Source: {executionResult.toolOutputs.weather.current?.source || 'Open-Meteo Satellite Feed'}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-sky-100 text-sky-800 font-bold text-[10px] rounded-full">
+                      Live Telemetry
+                    </span>
+                  </div>
+
+                  {executionResult.toolOutputs.weather.current && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                      <div className="p-2 bg-white rounded-lg border border-sky-100">
+                        <span className="text-[10px] text-stone-500 block">Temperature</span>
+                        <span className="font-bold text-stone-900 text-xs">
+                          {executionResult.toolOutputs.weather.current.temperatureC}°C
+                        </span>
+                      </div>
+                      <div className="p-2 bg-white rounded-lg border border-sky-100">
+                        <span className="text-[10px] text-stone-500 block">Wind Speed</span>
+                        <span className="font-bold text-sky-800 text-xs">
+                          {executionResult.toolOutputs.weather.current.windSpeedKmph} km/h
+                        </span>
+                      </div>
+                      <div className="p-2 bg-white rounded-lg border border-sky-100">
+                        <span className="text-[10px] text-stone-500 block">Humidity</span>
+                        <span className="font-bold text-stone-900 text-xs">
+                          {executionResult.toolOutputs.weather.current.humidityPercent}%
+                        </span>
+                      </div>
+                      <div className="p-2 bg-white rounded-lg border border-sky-100">
+                        <span className="text-[10px] text-stone-500 block">Spray Advisory</span>
+                        <span className={`font-bold text-xs ${
+                          executionResult.toolOutputs.weather.current.windSpeedKmph > 15 ? 'text-rose-700' : 'text-emerald-700'
+                        }`}>
+                          {executionResult.toolOutputs.weather.current.windSpeedKmph > 15 ? 'Postpone Spraying' : 'Favorable Window'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Crop Health Detailed Trace */}
+              {executionResult.toolsInvoked.includes('crop_health') && executionResult.toolOutputs.cropHealth && (
+                <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/20 text-xs">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-emerald-200/60">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-white rounded-md border border-emerald-200">
+                        <Leaf className="w-4 h-4 text-emerald-700" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-stone-900 text-sm">Crop Health Intelligence</span>
+                        <span className="text-[10px] text-emerald-700 block">ICAR Validated Plant Pathology</span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-full">
+                      Ranked Diagnostics
+                    </span>
+                  </div>
+
+                  {executionResult.toolOutputs.cropHealth.rankedCauses?.[0] && (
+                    <div className="bg-white p-3 rounded-lg border border-emerald-100 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-stone-900 text-xs">
+                          Top Cause: {executionResult.toolOutputs.cropHealth.rankedCauses[0].name}
+                        </span>
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded">
+                          {executionResult.toolOutputs.cropHealth.rankedCauses[0].confidenceScore}% Likelihood
+                        </span>
+                      </div>
+                      {executionResult.toolOutputs.cropHealth.rankedCauses[0].scientificName && (
+                        <p className="text-[10px] text-stone-400 italic">
+                          {executionResult.toolOutputs.cropHealth.rankedCauses[0].scientificName}
+                        </p>
+                      )}
+                      <p className="text-[11px] text-stone-600 pt-1">
+                        <span className="font-semibold text-stone-700">Immediate Action:</span>{' '}
+                        {executionResult.toolOutputs.cropHealth.immediateSteps?.[0]}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Soil Advisor Detailed Trace */}
+              {executionResult.toolsInvoked.includes('soil_advisor') && executionResult.toolOutputs.soil && (
+                <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/20 text-xs">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-amber-200/60">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-white rounded-md border border-amber-200">
+                        <Layers className="w-4 h-4 text-amber-700" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-stone-900 text-sm">Soil & Water Advisor</span>
+                        <span className="text-[10px] text-amber-700 block">Soil Health Card Benchmarks</span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold text-[10px] rounded-full">
+                      Health Grade: {executionResult.toolOutputs.soil.overallHealthGrade}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-stone-600 bg-white p-2.5 rounded-lg border border-amber-100">
+                    {executionResult.toolOutputs.soil.phAdjustmentAdvice || executionResult.toolOutputs.soil.organicMatterAdvice}
+                  </p>
+                </div>
+              )}
+
+              {/* Schemes Assistant Detailed Trace */}
+              {executionResult.toolsInvoked.includes('schemes_assistant') && executionResult.toolOutputs.schemes && (
+                <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50/20 text-xs">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-indigo-200/60">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-white rounded-md border border-indigo-200">
+                        <FileBadge className="w-4 h-4 text-indigo-700" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-stone-900 text-sm">Government Schemes & Loss Claims</span>
+                        <span className="text-[10px] text-indigo-700 block">PMFBY 72-Hour Legal Deadline</span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 font-bold text-[10px] rounded-full">
+                      Letter Formatted
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-stone-600 bg-white p-2.5 rounded-lg border border-indigo-100">
+                    Formal statutory crop damage notice prepared. Call Toll-Free 14447 or submit to the District Agriculture Officer.
+                  </p>
+                </div>
+              )}
             </div>
+
+            {/* Expandable Raw JSON Trace */}
+            {showRawTrace && (
+              <div className="mt-4 pt-4 border-t border-stone-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold text-stone-700 font-mono flex items-center gap-1.5">
+                    <Terminal className="w-3.5 h-3.5 text-stone-500" />
+                    Raw Universal Agent Execution Payload
+                  </span>
+                  <span className="text-[10px] text-stone-400 font-mono">
+                    Request ID: {executionResult.requestId}
+                  </span>
+                </div>
+                <pre className="p-3.5 bg-stone-900 text-emerald-400 rounded-xl text-[10px] sm:text-xs overflow-x-auto font-mono max-h-96">
+                  {JSON.stringify(executionResult, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
 
           {/* 3. Consolidated Agricultural Intelligence & Reasoning */}
