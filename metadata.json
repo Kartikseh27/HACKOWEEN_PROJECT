@@ -1,0 +1,6 @@
+{
+  "name": "KISAN CULTURE",
+  "description": "Agentic AI Agricultural Intelligence Platform for Indian Farmers — crop health, weather risks, soil management, mandi prices, and government schemes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
