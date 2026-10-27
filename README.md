@@ -5,7 +5,8 @@
 [![React 19](https://img.shields.io/badge/React-19.0+-61DAFB.svg)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4.0-38B2AC.svg)](https://tailwindcss.com/)
 [![ReportLab PDF](https://img.shields.io/badge/ReportLab-A4%20PDF-red.svg)](https://www.reportlab.com/)
-[![Tests](https://img.shields.io/badge/Pytest-18%20Passed%20(100%25)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Pytest-25%20Passed%20(100%25)-brightgreen.svg)]()
+[![n8n](https://img.shields.io/badge/n8n-Agentic%20Workflow-EA4B71.svg)](https://n8n.io/)
 
 > **An evidence-based, culturally grounded autonomous agricultural intelligence system for Indian farmers (Annadatas).** Combines real-time meteorology, ICAR crop pathology benchmarks, deterministic APMC mandi economics, official scheme assistance, and autonomous multi-tool orchestration with full execution trace transparency.
 
@@ -157,11 +158,12 @@ venv/bin/python tests/verify_hackathon_demo.py
 
 An importable n8n workflow JSON is included in [`n8n/kisan_culture_agent_workflow.json`](./n8n/kisan_culture_agent_workflow.json).
 
-### How to Import into n8n:
+### How to Import & Run n8n:
 1. Launch n8n: `npx n8n` (runs on `http://localhost:5678`).
-2. Go to **Workflows** -> **Import from File** -> Select `n8n/kisan_culture_agent_workflow.json`.
-3. Activate the workflow.
-4. Send automated webhook queries to `http://localhost:5678/webhook/kisan-agent`.
+2. Go to **Workflows** -> **Import from File** -> Select `n8n/kisan-culture-agent.json`.
+3. Activate the workflow (listens on `POST /webhook/kisan-agent`).
+4. Configure `N8N_WEBHOOK_URL="http://localhost:5678/webhook/kisan-agent"` in `backend/.env`.
+5. See `n8n/SETUP.md` for complete step-by-step instructions.
 
 ---
 
@@ -173,6 +175,8 @@ Create a `backend/.env` file (or copy from `backend/.env.example`):
 | :--- | :--- | :--- | :--- |
 | `GEMINI_API_KEY` | Optional | Free-tier Google AI Studio Key | Multimodal leaf vision & natural language response expansion |
 | `DATABASE_URL` | No | `sqlite:///./kisan_culture.db` | Local SQLite database for session persistence & tool logs |
+| `N8N_WEBHOOK_URL` | Optional | `http://localhost:5678/webhook/kisan-agent` | URL of active n8n agricultural workflow webhook |
+| `N8N_TIMEOUT_SECONDS` | No | `20.0` | Timeout threshold before graceful fallback to native agent |
 | `CORS_ORIGINS` | No | `["http://localhost:3000", "http://127.0.0.1:3000"]` | Frontend access permissions |
 | `OPEN_METEO_API` | No | Free (no key required) | Live weather telemetry |
 
@@ -187,32 +191,39 @@ cd backend && venv/bin/pytest -v
 
 ```text
 ============================= test session starts ==============================
-collected 18 items
+collected 25 items
 
-tests/test_agent.py::test_agent_orchestrates_multiple_tools PASSED       [  5%]
-tests/test_agent.py::test_agent_hindi_support PASSED                     [ 11%]
-tests/test_agent_scenarios.py::test_entity_extraction_mandi_and_crop PASSED [ 16%]
-tests/test_agent_scenarios.py::test_entity_extraction_hindi PASSED       [ 22%]
-tests/test_agent_scenarios.py::test_tool_selection_logic PASSED          [ 27%]
-tests/test_scenario_1_crop_health_evidence_based PASSED                  [ 33%]
-tests/test_scenario_2_weather_spray_window PASSED                        [ 38%]
-tests/test_scenario_3_mandi_deterministic_profit PASSED                  [ 44%]
-tests/test_multi_tool_autonomous_orchestration PASSED                    [ 50%]
-tests/test_health.py::test_health_check PASSED                           [ 55%]
-tests/test_health.py::test_tools_status_transparency PASSED              [ 61%]
-tests/test_mandi_math.py::test_mandi_prices_retrieval PASSED             [ 66%]
-tests/test_mandi_math.py::test_deterministic_profit_calculations PASSED  [ 72%]
-tests/test_reports.py::test_generate_and_download_report PASSED          [ 77%]
-tests/test_tools.py::test_crop_health_analysis PASSED                    [ 83%]
-tests/test_weather_lookup PASSED                                         [ 88%]
-tests/test_soil_analysis PASSED                                          [ 94%]
+tests/test_agent.py::test_agent_orchestrates_multiple_tools PASSED       [  4%]
+tests/test_agent.py::test_agent_hindi_support PASSED                     [  8%]
+tests/test_agent_scenarios.py::test_entity_extraction_mandi_and_crop PASSED [ 12%]
+tests/test_agent_scenarios.py::test_entity_extraction_hindi PASSED       [ 16%]
+tests/test_agent_scenarios.py::test_tool_selection_logic PASSED          [ 20%]
+tests/test_agent_scenarios.py::test_scenario_1_crop_health_evidence_based PASSED [ 24%]
+tests/test_agent_scenarios.py::test_scenario_2_weather_spray_window PASSED [ 28%]
+tests/test_agent_scenarios.py::test_scenario_3_mandi_deterministic_profit PASSED [ 32%]
+tests/test_agent_scenarios.py::test_multi_tool_autonomous_orchestration PASSED [ 36%]
+tests/test_health.py::test_health_check PASSED                           [ 40%]
+tests/test_health.py::test_tools_status_transparency PASSED              [ 44%]
+tests/test_mandi_math.py::test_mandi_prices_retrieval PASSED             [ 48%]
+tests/test_mandi_math.py::test_deterministic_profit_calculations PASSED  [ 52%]
+tests/test_n8n_integration.py::test_engine_status_endpoint PASSED        [ 56%]
+tests/test_n8n_integration.py::test_scenario_a_crop_health_query PASSED  [ 60%]
+tests/test_n8n_integration.py::test_scenario_b_weather_risks PASSED      [ 64%]
+tests/test_n8n_integration.py::test_scenario_c_mandi_deterministic_profit PASSED [ 68%]
+tests/test_n8n_integration.py::test_scenario_d_empty_prompt_validation PASSED [ 72%]
+tests/test_n8n_integration.py::test_n8n_offline_fallback PASSED          [ 76%]
+tests/test_n8n_integration.py::test_n8n_synthetic_response_mapping PASSED [ 80%]
+tests/test_reports.py::test_generate_and_download_report PASSED          [ 84%]
+tests/test_tools.py::test_crop_health_analysis PASSED                    [ 88%]
+tests/test_weather_lookup PASSED                                         [ 92%]
+tests/test_soil_analysis PASSED                                          [ 96%]
 tests/test_schemes_and_pmfby_loss_draft PASSED                           [100%]
 
-============================== 18 passed in 0.09s ==============================
+============================== 25 passed in 0.12s ==============================
 ```
 
-- **Pass Rate**: 100% (18/18 tests passing)
-- **Execution Time**: ~0.09 seconds
+- **Pass Rate**: 100% (25/25 tests passing)
+- **Execution Time**: ~0.12 seconds
 
 ---
 

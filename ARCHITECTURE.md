@@ -325,6 +325,7 @@ kisan-culture/
 │       ├── __init__.py
 │       ├── conftest.py              # Test fixtures and SQLite setup
 │       ├── test_agent_scenarios.py  # End-to-end hackathon scenarios (1-4)
+│       ├── test_n8n_integration.py  # n8n webhook, tests A, B, C, missing inputs & fallback
 │       ├── test_agent.py            # Multi-tool orchestration & Hindi language tests
 │       ├── test_health.py           # Health check and transparency tests
 │       ├── test_mandi_math.py       # Deterministic profit & break-even math tests
@@ -332,23 +333,55 @@ kisan-culture/
 │       ├── test_reports.py          # PDF generation & download tests
 │       └── verify_hackathon_demo.py # Standalone verification runner script
 │
-└── n8n/                             # AUTOMATION: n8n Workflow Package
-    ├── README.md                    # n8n import & execution guide
-    └── kisan_culture_agent_workflow.json # Importable production workflow JSON
+└── n8n/                             # AUTOMATION: n8n Autonomous Agentic AI Workflow
+    ├── SETUP.md                     # Step-by-step setup, run & import instructions
+    ├── kisan-culture-agent.json     # Importable production workflow JSON (Webhook -> Router -> Tools -> Synthesis -> Response)
+    └── kisan_culture_agent_workflow.json # Legacy workflow JSON
 ```
 
 ---
 
-## 6. Verification & Automated Test Results
+## 6. n8n Dual-Engine Architecture & Offline Fallback Mechanics
+
+```mermaid
+flowchart LR
+    FarmerUI["React Frontend UI\n(Engine Selector Toggle)"]
+    FastAPI["FastAPI Orchestrator\n(/api/agent/orchestrate)"]
+    N8nEngine["n8n Autonomous Workflow\n(http://localhost:5678/webhook/kisan-agent)"]
+    NativeEngine["Native Python Universal Agent\n(universal_agent.py)"]
+    Tools["5 Agricultural Domain Tools\n(Pathology, Weather, Soil, Mandi, Schemes)"]
+
+    FarmerUI -->|"1. User query + engine toggle ('native' | 'n8n')"| FastAPI
+    FastAPI -->|"If engine == 'n8n' and online"| N8nEngine
+    N8nEngine -->|"Executes multi-tool graph"| Tools
+    N8nEngine -->|"Returns JSON synthesis"| FastAPI
+    FastAPI -.->|"If n8n offline / timeout / unconfigured\n(Graceful Fallback)"| NativeEngine
+    NativeEngine -->|"Direct Python execution"| Tools
+    NativeEngine -->|"Returns execution result"| FastAPI
+    FastAPI -->|"Normalized Execution Result Schema"| FarmerUI
+```
+
+### Key Integration Highlights:
+1. **Engine Selection**: Frontend allows switching between `⚡ Native Python Agent` and `🔄 n8n Autonomous Workflow`.
+2. **Deterministic Mandi Arithmetic**: Both native Python and n8n implement exact formulas:
+   $$\text{Gross Revenue} = \text{Quantity} \times \text{Price}$$
+   $$\text{Net Profit} = \text{Gross Revenue} - \text{Total Costs}$$
+   $$\text{Break-Even Price} = \frac{\text{Total Costs}}{\text{Quantity}}$$
+   (e.g., 20 quintals @ ₹2,500 with ₹20,000 costs yields ₹50,000 gross, ₹20,000 costs, ₹30,000 net profit).
+3. **Resilient Fallback**: If `N8N_WEBHOOK_URL` is empty or n8n is offline, FastAPI automatically catches the connection failure and runs the native agent without any 500 error or user disruption.
+
+---
+
+## 7. Verification & Automated Test Results
 
 The refactored codebase was strictly verified:
 
 1. **Backend Automated Tests (`cd backend && venv/bin/pytest -v`)**:
-   - **18 / 18 Tests Passing** in 0.09s.
-   - Covers entity parsing, tool selection, crop pathology, weather telemetry, deterministic mandi math, PMFBY draft generator, and report downloads.
+   - **25 / 25 Tests Passing** in 0.12s.
+   - Covers Tests A (Crop Health), Test B (Weather & Spray), Test C (Mandi Economics Deterministic Math), Test D (Missing Prompt Validation), n8n Offline Fallback, Engine Status, and PMFBY Loss Claims.
 2. **Frontend Build & Typechecks (`npm run lint && npm run build`)**:
    - `tsc --noEmit`: Clean, 0 TypeScript errors.
-   - `vite build`: Completed in 123ms with 1682 modules transformed.
-3. **End-to-End Demo Script (`cd backend && venv/bin/python tests/verify_hackathon_demo.py`)**:
+   - `vite build`: Completed in 155ms with 1682 modules transformed.
+3. **End-to-End Demo Script (`npm run test:demo`)**:
    - Successfully executed all 4 hackathon scenarios against the live backend database and verified real grounded outputs.
 

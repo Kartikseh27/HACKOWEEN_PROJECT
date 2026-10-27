@@ -295,6 +295,8 @@ export interface UniversalAgentExecutionResult {
     description: string;
     targetService: string;
   }>;
+  executionEngine?: string;
+  n8nConnected?: boolean;
 }
 
 // 7. Reports & Conversations

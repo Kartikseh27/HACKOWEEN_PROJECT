@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     WEATHER_API_BASE_URL: str = "https://api.open-meteo.com/v1"
     
+    # n8n Automation Engine
+    N8N_WEBHOOK_URL: str = ""
+    N8N_TIMEOUT_SECONDS: float = 20.0
+    
     # Limits
     MAX_UPLOAD_SIZE_MB: int = 25
 

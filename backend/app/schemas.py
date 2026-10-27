@@ -303,6 +303,7 @@ class UniversalAgentInputSchema(BaseModel):
     files: Optional[List[UploadedFileMetaSchema]] = []
     language: Literal['en', 'hi'] = 'en'
     conversationId: Optional[str] = None
+    engine: Optional[Literal['native', 'n8n']] = 'native'
 
 
 class UniversalAgentExecutionResultSchema(BaseModel):
@@ -319,6 +320,8 @@ class UniversalAgentExecutionResultSchema(BaseModel):
     followUpQuestions: List[str]
     reportArtifactId: Optional[str] = None
     consequentialActionsPendingApproval: Optional[List[ConsequentialActionSchema]] = []
+    executionEngine: Optional[str] = "native_universal_agent"
+    n8nConnected: Optional[bool] = False
 
 
 # -------------------------------------------------------------

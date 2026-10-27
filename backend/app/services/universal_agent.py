@@ -161,22 +161,40 @@ def extract_agricultural_entities(
             if b_match:
                 quantity_quintals = float(b_match.group(1)) * 0.5
 
-    # 4. Mandi Selling Price per Quintal
+    # 4. Mandi Selling Price per Quintal (supports formats like ₹2,500, Rs 2450, 2500 per quintal)
     expected_price: Optional[float] = None
     p_match = re.search(
-        r'(?:rs\.?|inr|₹|at|भाव|दर|रेट)\s*[:=]?\s*(\d{3,5})',
+        r'(?:selling\s+price|price|rate|भाव|दर|रेट)?\s*(?:is|are|=|:)?\s*(?:rs\.?|inr|₹)\s*(\d{1,3}(?:,\d{3})+|\d{3,5})',
         p_lower
     )
     if p_match:
-        expected_price = float(p_match.group(1))
-    else:
-        # e.g. "2450 per quintal" or "2500 rs"
+        try:
+            expected_price = float(p_match.group(1).replace(",", ""))
+        except ValueError:
+            pass
+
+    if expected_price is None:
         p_match2 = re.search(
-            r'(\d{3,5})\s*(?:rs|inr|₹|per\s*qtl|/qtl|रुपये|प्रति\s*क्विंटल)',
+            r'(?:at|भाव|दर|रेट)\s*[:=]?\s*(\d{1,3}(?:,\d{3})+|\d{3,5})',
             p_lower
         )
         if p_match2:
-            expected_price = float(p_match2.group(1))
+            try:
+                expected_price = float(p_match2.group(1).replace(",", ""))
+            except ValueError:
+                pass
+
+    if expected_price is None:
+        # e.g. "2,500 per quintal" or "2450 rs"
+        p_match3 = re.search(
+            r'(\d{1,3}(?:,\d{3})+|\d{3,5})\s*(?:rs|inr|₹|per\s*qtl|per\s*quintal|/qtl|रुपये|प्रति\s*क्विंटल)',
+            p_lower
+        )
+        if p_match3:
+            try:
+                expected_price = float(p_match3.group(1).replace(",", ""))
+            except ValueError:
+                pass
 
     # 5. Transport / Freight Cost per Quintal
     transport_cost: Optional[float] = None
@@ -210,6 +228,18 @@ def extract_agricultural_entities(
         )
         if l_cost_match2:
             loading_cost = float(l_cost_match2.group(1))
+
+    # 6b. Total Costs (Lump sum expenses, e.g. "total costs are ₹20,000" or "costs are 20000" or "कुल खर्च 20000")
+    total_costs: Optional[float] = None
+    tot_cost_match = re.search(
+        r'(?:total\s+costs?|total\s+expenses?|total\s+expenditure|costs?|expenses?|कुल\s*खर्च|लागत)\s*(?:are|is|of|=|:|\s*of)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:,\d+)?(?:\.\d+)?)',
+        p_lower
+    )
+    if tot_cost_match:
+        try:
+            total_costs = float(tot_cost_match.group(1).replace(",", ""))
+        except ValueError:
+            total_costs = None
 
     # 7. Soil Parameters (pH, EC, Organic Carbon, Nitrogen)
     soil_ph: Optional[float] = None
@@ -266,6 +296,7 @@ def extract_agricultural_entities(
         "expectedPrice": expected_price,
         "transportCost": transport_cost,
         "loadingCost": loading_cost,
+        "totalCosts": total_costs,
         "soilPh": soil_ph,
         "soilEc": soil_ec,
         "soilOc": soil_oc,
@@ -645,8 +676,18 @@ async def orchestrate_agent_workflow(
             # Use extracted price & quantity or intelligent defaults
             calc_qty = entities["quantityQuintals"] if entities["quantityQuintals"] is not None else 50.0
             calc_price = entities["expectedPrice"] if entities["expectedPrice"] is not None else benchmark_price
-            calc_trans = entities["transportCost"] if entities["transportCost"] is not None else 30.0
-            calc_load = entities["loadingCost"] if entities["loadingCost"] is not None else 15.0
+            
+            # Check if farmer provided lump-sum total costs (e.g. Test C: total costs are ₹20,000)
+            if entities.get("totalCosts") is not None:
+                calc_lump_sum = entities["totalCosts"]
+                calc_trans = 0.0
+                calc_load = 0.0
+                calc_cess = 0.0
+            else:
+                calc_lump_sum = 0.0
+                calc_trans = entities["transportCost"] if entities["transportCost"] is not None else 30.0
+                calc_load = entities["loadingCost"] if entities["loadingCost"] is not None else 15.0
+                calc_cess = 1.0
 
             profit_calc = calculate_mandi_net_profit(
                 MandiCalculationInputSchema(
@@ -655,7 +696,8 @@ async def orchestrate_agent_workflow(
                     expectedSellingPricePerQtl=calc_price,
                     transportCostPerQtl=calc_trans,
                     loadingUnloadingCostPerQtl=calc_load,
-                    mandiCessPercentage=1.0,
+                    mandiCessPercentage=calc_cess,
+                    otherExpensesLumpSum=calc_lump_sum,
                 )
             )
             t_m_ms = max(8, int((time.time() - t0) * 1000))

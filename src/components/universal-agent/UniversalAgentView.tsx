@@ -77,6 +77,7 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
   const [approvedActions, setApprovedActions] = useState<string[]>([]);
   const [showRawTrace, setShowRawTrace] = useState(false);
   const [selectedTraceTool, setSelectedTraceTool] = useState<ToolName | null>(null);
+  const [selectedEngine, setSelectedEngine] = useState<'native' | 'n8n'>('native');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file uploads with preview
@@ -131,6 +132,7 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
         cropContext,
         files,
         language,
+        engine: selectedEngine,
       });
 
       setExecutionResult(result);
@@ -205,9 +207,35 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
               </p>
             </div>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md">
-            {t.universalAgent.badge}
-          </span>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex rounded-lg border border-stone-200 bg-stone-100 p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setSelectedEngine('native')}
+                className={`px-3 py-1 font-semibold rounded-md transition-all ${
+                  selectedEngine === 'native'
+                    ? 'bg-white text-emerald-800 shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                ⚡ Native Python
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedEngine('n8n')}
+                className={`px-3 py-1 font-semibold rounded-md transition-all ${
+                  selectedEngine === 'n8n'
+                    ? 'bg-white text-emerald-800 shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                🔄 n8n Autonomous Workflow
+              </button>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md">
+              {t.universalAgent.badge}
+            </span>
+          </div>
         </div>
 
         {/* Query Input Box */}
@@ -360,7 +388,7 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  const q = 'My wheat leaves have yellow spots and drying leaf tips. What disease is this and what should I do?';
+                  const q = 'My wheat leaves are turning yellow. What should I check?';
                   setPrompt(q);
                   setCropContext('Wheat');
                   handleExecuteAgent(q);
@@ -370,19 +398,20 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
                 <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800 uppercase mb-1">
                   <span className="flex items-center gap-1">
                     <Leaf className="w-3 h-3 text-emerald-700" />
-                    Scenario 1: Crop Pathology
+                    Test A: Crop Health
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-emerald-200 font-mono">ICAR Rules</span>
                 </div>
-                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Yellow spots & drying tips on wheat</p>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Wheat leaves turning yellow</p>
                 <p className="text-[10px] text-stone-500 mt-0.5">Evidence-based ranked diagnosis & IPM actions</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  const q = 'What is the weather forecast for Karnal and can I safely spray pesticide tomorrow morning?';
+                  const q = 'What weather risks should a farmer consider for growing wheat?';
                   setPrompt(q);
+                  setCropContext('Wheat');
                   setDistrict('Karnal');
                   setState('Haryana');
                   handleExecuteAgent(q);
@@ -392,18 +421,18 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
                 <div className="flex items-center justify-between text-[10px] font-bold text-sky-800 uppercase mb-1">
                   <span className="flex items-center gap-1">
                     <CloudSun className="w-3 h-3 text-sky-700" />
-                    Scenario 2: Weather & Spray
+                    Test B: Weather & Spray
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-sky-200 font-mono">Open-Meteo</span>
                 </div>
-                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Karnal forecast & spray window safety</p>
-                <p className="text-[10px] text-stone-500 mt-0.5">Wind velocity, precipitation risk, & humidity check</p>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">Weather risks for wheat in Karnal</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">Live forecast, spray windows & precautionary advice</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  const q = 'I want to sell 100 quintals of wheat at Rs 2450 with Rs 30 transport and Rs 15 handling. What is my profit and break-even price?';
+                  const q = 'I have 20 quintals of wheat. Selling price is ₹2,500 per quintal and total costs are ₹20,000. Calculate my expected net profit.';
                   setPrompt(q);
                   setCropContext('Wheat');
                   handleExecuteAgent(q);
@@ -413,12 +442,12 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
                 <div className="flex items-center justify-between text-[10px] font-bold text-amber-800 uppercase mb-1">
                   <span className="flex items-center gap-1">
                     <Calculator className="w-3 h-3 text-amber-700" />
-                    Scenario 3: Mandi Economics
+                    Test C: Mandi Economics
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-amber-200 font-mono">Deterministic Math</span>
                 </div>
-                <p className="text-xs font-semibold text-stone-900 line-clamp-1">100 qtl @ ₹2450 with ₹30 transport</p>
-                <p className="text-[10px] text-stone-500 mt-0.5">Revenue, cess, freight deductions & break-even</p>
+                <p className="text-xs font-semibold text-stone-900 line-clamp-1">20 qtl @ ₹2,500 with ₹20,000 costs</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">₹50,000 gross - ₹20,000 costs = ₹30,000 net profit</p>
               </button>
 
               <button
@@ -434,7 +463,7 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
                 <div className="flex items-center justify-between text-[10px] font-bold text-purple-800 uppercase mb-1">
                   <span className="flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-purple-700" />
-                    Scenario 4: Multi-Tool Agent
+                    Test D: Multi-Tool Agent
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 bg-white rounded border border-purple-200 font-mono">3 Tools Joint</span>
                 </div>
@@ -477,10 +506,21 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
         <div className="space-y-6">
           {/* 1. Visible Task Plan Tracker */}
           <div className="bg-white rounded-xl p-6 border border-stone-200">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-emerald-800" />
-              <span>{t.universalAgent.taskPlanTitle}</span>
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
+                <Activity className="w-4 h-4 text-emerald-800" />
+                <span>{t.universalAgent.taskPlanTitle}</span>
+              </h2>
+              {executionResult.executionEngine && (
+                <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold border ${
+                  executionResult.executionEngine === 'n8n'
+                    ? 'bg-sky-50 text-sky-800 border-sky-300'
+                    : 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                }`}>
+                  Engine: {executionResult.executionEngine === 'n8n' ? '🔄 n8n Autonomous Workflow' : '⚡ Native Python Agent'}
+                </span>
+              )}
+            </div>
 
             <div className="space-y-3">
               {executionResult.plan.map((step) => (

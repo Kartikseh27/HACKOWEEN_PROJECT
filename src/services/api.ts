@@ -128,6 +128,7 @@ export const api = {
     cropContext: string;
     files: any[];
     language: Language;
+    engine?: 'native' | 'n8n';
   }): Promise<UniversalAgentExecutionResult> {
     const res = await fetchWithTimeout('/api/agent/orchestrate', {
       method: 'POST',
@@ -138,6 +139,12 @@ export const api = {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || 'Agent execution failed');
     }
+    return res.json();
+  },
+
+  async getAgentEngineStatus(): Promise<any> {
+    const res = await fetchWithTimeout('/api/agent/engine-status');
+    if (!res.ok) return null;
     return res.json();
   },
 
