@@ -23,6 +23,9 @@ import { ReportsView } from './components/reports/ReportsView';
 import { HistoryView } from './components/history/HistoryView';
 import { SettingsView } from './components/settings/SettingsView';
 import { PrintableReportModal } from './components/reports/PrintableReportModal';
+import { KisanMitraFloating } from './components/culture/KisanMitraFloating';
+import { KisanKendraModal } from './components/culture/KisanKendraModal';
+import { CropDoctorModal } from './components/culture/CropDoctorModal';
 
 const INITIAL_LOCATION = {
   state: 'Haryana',
@@ -93,6 +96,9 @@ export default function App() {
   });
 
   const [activeReportModal, setActiveReportModal] = useState<FarmerReport | null>(null);
+  const [pendingPrompt, setPendingPrompt] = useState<string>('');
+  const [globalKendraOpen, setGlobalKendraOpen] = useState(false);
+  const [globalDoctorOpen, setGlobalDoctorOpen] = useState(false);
 
   // Sync state to localStorage
   useEffect(() => {
@@ -139,6 +145,7 @@ export default function App() {
   };
 
   const handleQuickStartPrompt = (promptText: string) => {
+    setPendingPrompt(promptText);
     setCurrentTab('universal-agent');
   };
 
@@ -183,6 +190,8 @@ export default function App() {
               onOpenReport={setActiveReportModal}
               onSaveReportToList={handleSaveReportToList}
               defaultLocation={location}
+              initialPrompt={pendingPrompt}
+              onClearInitialPrompt={() => setPendingPrompt('')}
             />
           )}
 
@@ -266,6 +275,34 @@ export default function App() {
         report={activeReportModal}
         onClose={() => setActiveReportModal(null)}
         language={language}
+      />
+
+      {/* Floating Farmer Companion */}
+      <KisanMitraFloating
+        language={language}
+        onOpenKendra={() => setGlobalKendraOpen(true)}
+        onOpenDoctor={() => setGlobalDoctorOpen(true)}
+        onSelectTab={setCurrentTab}
+        onQuickStartPrompt={(p) => setPendingPrompt(p)}
+      />
+
+      {/* Global Modals triggered from Floating Assistant or elsewhere */}
+      <KisanKendraModal
+        isOpen={globalKendraOpen}
+        onClose={() => setGlobalKendraOpen(false)}
+        language={language}
+      />
+
+      <CropDoctorModal
+        isOpen={globalDoctorOpen}
+        onClose={() => setGlobalDoctorOpen(false)}
+        language={language}
+        onSelectSymptomForAI={(symptomName, crop) => {
+          setPendingPrompt(
+            `Inspect observed symptom: "${symptomName}" for ${crop} in ${location.district}, ${location.state}. Provide ICAR diagnosis and prioritized cultural/chemical spray plan.`
+          );
+          setCurrentTab('crop-health');
+        }}
       />
     </div>
   );

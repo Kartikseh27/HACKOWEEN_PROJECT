@@ -22,6 +22,7 @@ import {
   SunMedium,
   CloudRain,
 } from 'lucide-react';
+import { KisanVoicePlayer } from '../culture/KisanVoicePlayer';
 
 interface WeatherGuardianViewProps {
   language: Language;
@@ -357,10 +358,18 @@ export const WeatherGuardianView: React.FC<WeatherGuardianViewProps> = ({
 
           {/* Action Plan */}
           <div className="bg-white rounded-xl p-6 border border-stone-200">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-800" />
-              <span>{t.weatherGuardian.actionPlanTitle}</span>
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-800" />
+                <span>{t.weatherGuardian.actionPlanTitle}</span>
+              </h2>
+              <KisanVoicePlayer
+                text={`${weatherData.district} मौसम सलाह: तापमान ${weatherData.current.temperatureC} डिग्री। ${weatherData.agriculturalActionPlan.join('. ')}`}
+                language={language}
+                label={language === 'hi' ? 'मौसम सलाह सुनें' : 'Listen Weather Advisory'}
+                compact
+              />
+            </div>
             <div className="space-y-2 text-xs sm:text-sm text-stone-700">
               {weatherData.agriculturalActionPlan.map((plan, i) => (
                 <div key={i} className="p-3 bg-stone-50 rounded-lg border border-stone-200/70">

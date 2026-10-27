@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Language,
   UniversalAgentExecutionResult,
@@ -13,6 +13,7 @@ import {
 } from '../../types';
 import { translations } from '../../i18n/translations';
 import { api } from '../../services/api';
+import { KisanVoicePlayer } from '../culture/KisanVoicePlayer';
 import {
   Sparkles,
   Upload,
@@ -39,6 +40,8 @@ interface UniversalAgentViewProps {
   onOpenReport: (report: FarmerReport) => void;
   onSaveReportToList: (report: FarmerReport) => void;
   defaultLocation: { state: string; district: string };
+  initialPrompt?: string;
+  onClearInitialPrompt?: () => void;
 }
 
 export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
@@ -46,9 +49,18 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
   onOpenReport,
   onSaveReportToList,
   defaultLocation,
+  initialPrompt,
+  onClearInitialPrompt,
 }) => {
   const t = translations[language];
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState(initialPrompt || '');
+
+  useEffect(() => {
+    if (initialPrompt) {
+      setPrompt(initialPrompt);
+      if (onClearInitialPrompt) onClearInitialPrompt();
+    }
+  }, [initialPrompt]);
   const [cropContext, setCropContext] = useState('Wheat');
   const [state, setState] = useState(defaultLocation.state);
   const [district, setDistrict] = useState(defaultLocation.district);
@@ -428,10 +440,18 @@ export const UniversalAgentView: React.FC<UniversalAgentViewProps> = ({
 
           {/* 3. Consolidated Agricultural Intelligence & Reasoning */}
           <div className="bg-white rounded-xl p-6 border border-stone-200">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              <span>{t.universalAgent.synthesisTitle}</span>
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <span>{t.universalAgent.synthesisTitle}</span>
+              </h2>
+              <KisanVoicePlayer
+                text={executionResult.integratedSynthesis}
+                language={language}
+                label={language === 'hi' ? 'सलाह बोलकर सुनें' : 'Listen Synthesis'}
+                compact
+              />
+            </div>
             <div className="text-xs sm:text-sm text-stone-700 leading-relaxed space-y-3 whitespace-pre-line bg-stone-50 p-4 rounded-xl border border-stone-200/60">
               {executionResult.integratedSynthesis}
             </div>

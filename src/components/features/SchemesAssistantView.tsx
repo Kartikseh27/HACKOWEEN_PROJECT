@@ -20,7 +20,9 @@ import {
   Clock,
   Send,
   HelpCircle,
+  Sparkles,
 } from 'lucide-react';
+import { KisanVoicePlayer } from '../culture/KisanVoicePlayer';
 
 interface SchemesAssistantViewProps {
   language: Language;
@@ -177,17 +179,39 @@ export const SchemesAssistantView: React.FC<SchemesAssistantViewProps> = ({
         /* PMFBY Loss Claim Assistant */
         <div className="space-y-6">
           <div className="bg-white rounded-xl p-6 sm:p-8 border border-stone-200 space-y-6">
-            <div className="border-b border-stone-100 pb-3">
-              <div className="flex items-center gap-2 text-rose-800 font-bold text-xs uppercase tracking-wider mb-1">
-                <Clock className="w-4 h-4" />
-                <span>Critical 72-Hour Time Window</span>
+            <div className="border-b border-stone-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 text-rose-800 font-bold text-xs uppercase tracking-wider mb-1">
+                  <Clock className="w-4 h-4" />
+                  <span>Critical 72-Hour Time Window</span>
+                </div>
+                <h2 className="text-base font-bold text-stone-900">
+                  {t.schemesAssistant.pmfbyHelperTitle}
+                </h2>
+                <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                  {t.schemesAssistant.pmfbyDesc}
+                </p>
               </div>
-              <h2 className="text-base font-bold text-stone-900">
-                {t.schemesAssistant.pmfbyHelperTitle}
-              </h2>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed">
-                {t.schemesAssistant.pmfbyDesc}
-              </p>
+
+              {/* 1-Click Preset */}
+              <button
+                type="button"
+                onClick={() => {
+                  setFarmerName('Baldev Singh');
+                  setPhone('9812345678');
+                  setLocation('Alwar, Rajasthan');
+                  setCropName('Mustard (सरसों)');
+                  setKhasraNo('214/5');
+                  setInsuredArea(4);
+                  setCalamityType('hailstorm');
+                  setDamagePercent(75);
+                  setPolicyNo('PMFBY-2024-RAJ-9921');
+                }}
+                className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl text-xs font-bold transition-colors shadow-2xs flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                <span>{language === 'hi' ? 'अलवर ओलावृष्टि उदाहरण भरें' : 'Load Hailstorm Sample'}</span>
+              </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -342,6 +366,13 @@ export const SchemesAssistantView: React.FC<SchemesAssistantViewProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <KisanVoicePlayer
+                    text={claimDraft.generatedLetterDraft}
+                    language={language}
+                    label={language === 'hi' ? 'आवेदन पत्र सुनें' : 'Listen Letter'}
+                    compact
+                  />
+
                   <button
                     onClick={copyToClipboard}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-stone-300 rounded-lg text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-colors"

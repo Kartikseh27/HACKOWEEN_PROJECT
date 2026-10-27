@@ -20,13 +20,17 @@ import {
   FileBadge,
   Upload,
   ArrowRight,
-  Printer,
   ChevronRight,
-  ShieldCheck,
-  CheckCircle2,
   FileText,
-  MapPin,
+  Calculator,
+  Wheat,
 } from 'lucide-react';
+
+import { KisanCultureHero } from '../culture/KisanCultureHero';
+import { MandiLiveTicker } from '../culture/MandiLiveTicker';
+import { KisanHelplineBar } from '../culture/KisanHelplineBar';
+import { KisanKendraModal } from '../culture/KisanKendraModal';
+import { CropDoctorModal } from '../culture/CropDoctorModal';
 
 interface DashboardViewProps {
   onSelectTab: (tab: NavigationTab) => void;
@@ -35,7 +39,7 @@ interface DashboardViewProps {
   recentReports: FarmerReport[];
   recentSessions: ConversationSession[];
   onQuickStartPrompt: (promptText: string) => void;
-  defaultLocation: { state: string; district: string };
+  defaultLocation: { state: string; district: string; village?: string };
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -50,6 +54,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const t = translations[language];
   const [quickInput, setQuickInput] = useState('');
 
+  // Modals state
+  const [isKendraOpen, setIsKendraOpen] = useState(false);
+  const [isDoctorOpen, setIsDoctorOpen] = useState(false);
+
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!quickInput.trim()) return;
@@ -57,104 +65,122 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     onSelectTab('universal-agent');
   };
 
+  const handleSymptomSelectForAI = (symptomName: string, crop: string) => {
+    const prompt = `Inspect observed symptom: "${symptomName}" for ${crop} in ${defaultLocation.district}, ${defaultLocation.state}. Provide ICAR diagnosis, cause breakdown, and prioritized cultural/chemical spray plan.`;
+    onQuickStartPrompt(prompt);
+    onSelectTab('crop-health');
+  };
+
   const featureCards = [
     {
       id: 'crop-health' as NavigationTab,
       title: t.nav.cropHealth,
-      subtitle: language === 'en' ? 'Computer vision & symptom inspection for early disease detection' : 'पत्ती और फसल के लक्षणों की एआई जांच और प्राथमिक जैविक उपचार',
+      subtitle:
+        language === 'en'
+          ? 'Computer vision & symptom inspection for early disease detection and IPM organic recipes'
+          : 'पत्ती और फसल के लक्षणों की एआई जांच, जैविक नुस्खे और रासायनिक छिड़काव समाधान',
       image: '/src/assets/images/crop_health_inspection_1793120997803.jpg',
-      badge: 'Feature 01',
+      badge: language === 'hi' ? 'विशेषज्ञ टूल 01' : 'Feature 01',
       icon: Leaf,
     },
     {
       id: 'weather-guardian' as NavigationTab,
       title: t.nav.weatherGuardian,
-      subtitle: language === 'en' ? 'Hyperlocal risks, 5-day advisories for spraying, irrigation, and harvest' : 'अति-स्थानीय मौसम जोखिम और छिड़काव, बुवाई व कटाई की कार्ययोजना',
-      badge: 'Feature 02',
+      subtitle:
+        language === 'en'
+          ? 'Hyperlocal risks, 5-day advisories for spraying, irrigation, and frost/hail warnings'
+          : 'अति-स्थानीय मौसम जोखिम, छिड़काव अनुकूलता मीटर और पाला/ओलावृष्टि चेतावनी',
+      badge: language === 'hi' ? 'विशेषज्ञ टूल 02' : 'Feature 02',
       icon: CloudSun,
     },
     {
       id: 'soil-advisor' as NavigationTab,
       title: t.nav.soilAdvisor,
-      subtitle: language === 'en' ? 'Soil Health Card interpretation, texture feel guides, and pH reclamation' : 'मृदा स्वास्थ्य कार्ड विश्लेषण, बनावट परीक्षण और भूमि सुधार योजना',
+      subtitle:
+        language === 'en'
+          ? 'Soil Health Card interpretation, texture feel guides, and pH gypsum reclamation'
+          : 'मृदा स्वास्थ्य कार्ड विश्लेषण, बनावट परीक्षण और क्षारीय/अम्लीय भूमि सुधार योजना',
       image: '/src/assets/images/soil_testing_sample_1793120999484.jpg',
-      badge: 'Feature 03',
+      badge: language === 'hi' ? 'विशेषज्ञ टूल 03' : 'Feature 03',
       icon: Layers,
     },
     {
       id: 'mandi-advisor' as NavigationTab,
       title: t.nav.mandiAdvisor,
-      subtitle: language === 'en' ? 'APMC price discovery, transport deductions, and net realization calculator' : 'एपीएमसी मंडियों के भाव, परिवहन कटौती और शुद्ध लाभ की गणना',
+      subtitle:
+        language === 'en'
+          ? 'APMC price discovery, transport deductions, MSP delta, and net realization calculator'
+          : 'एपीएमसी मंडियों के लाइव भाव, परिवहन कटौती, एमएसपी तुलना और शुद्ध लाभ की गणना',
       image: '/src/assets/images/indian_mandi_market_1793120999517.jpg',
-      badge: 'Feature 04',
+      badge: language === 'hi' ? 'विशेषज्ञ टूल 04' : 'Feature 04',
       icon: TrendingUp,
     },
     {
       id: 'schemes-assistant' as NavigationTab,
       title: t.nav.schemesAssistant,
-      subtitle: language === 'en' ? 'PMFBY 72-hour crop loss intimation helper & welfare database' : 'पीएमएफबीवाई 72-घंटे का फसल क्षति सूचना पत्र और सरकारी योजनाएं',
-      badge: 'Feature 05',
+      subtitle:
+        language === 'en'
+          ? 'PMFBY 72-hour crop loss intimation helper, document checklist & welfare database'
+          : 'पीएमएफबीवाई 72-घंटे का फसल क्षति सूचना पत्र, दस्तावेज चेकलिस्ट और सरकारी योजनाएं',
+      badge: language === 'hi' ? 'विशेषज्ञ टूल 05' : 'Feature 05',
       icon: FileBadge,
     },
   ];
 
   return (
-    <div className="space-y-10 max-w-6xl mx-auto">
-      {/* Hero Welcome Card with Indian Farm Landscape */}
-      <div className="relative rounded-2xl overflow-hidden border border-stone-200 shadow-sm bg-stone-900 text-white min-h-[320px] flex flex-col justify-end">
-        {/* Background photo */}
-        <img
-          src="/src/assets/images/indian_wheat_farm_1793120997860.jpg"
-          alt="Lush green and golden wheat crop fields in Haryana India"
-          referrerPolicy="no-referrer"
-          className="absolute inset-0 w-full h-full object-cover opacity-35"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/60 to-transparent" />
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+      {/* 1. Live Mandi Prices Bar */}
+      <MandiLiveTicker
+        language={language}
+        onOpenMandiAdvisor={() => onSelectTab('mandi-advisor')}
+      />
 
-        {/* Hero Content */}
-        <div className="relative z-10 p-6 sm:p-10 max-w-3xl space-y-3">
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold tracking-wider uppercase">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Agentic Agricultural Intelligence · ICAR Aligned</span>
-          </div>
+      {/* 2. Cultural Farm Greeting & Folk Wisdom Hero */}
+      <KisanCultureHero
+        language={language}
+        defaultLocation={defaultLocation}
+        onSelectTab={onSelectTab}
+        onOpenKendra={() => setIsKendraOpen(true)}
+        onOpenDoctor={() => setIsDoctorOpen(true)}
+        onQuickStartPrompt={onQuickStartPrompt}
+      />
 
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            {t.tagline}
-          </h1>
-
-          <p className="text-xs sm:text-sm text-stone-200 leading-relaxed max-w-2xl">
-            {t.subTagline}
-          </p>
-
-          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-stone-300">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-              <span>
-                Default Region: {defaultLocation.district}, {defaultLocation.state}
-              </span>
-            </div>
-            <span aria-hidden="true">·</span>
-            <span>5 Specialized Tools</span>
-            <span aria-hidden="true">·</span>
-            <span>1 Universal Agent</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Prominent Universal AI Agent Quick-Start Input */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
+      {/* 3. Prominent Universal AI Agent Quick-Start Box */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-emerald-800 text-white flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-800 to-amber-800 text-white flex items-center justify-center shadow-xs">
               <Sparkles className="w-4 h-4 text-amber-300" />
             </div>
-            <h2 className="text-base font-bold text-stone-900">
-              {language === 'en' ? 'Ask Universal AI Agent' : 'सार्वभौमिक एआई एजेंट से पूछें'}
-            </h2>
+            <div>
+              <h2 className="text-base font-extrabold text-stone-900 leading-tight">
+                {language === 'en' ? 'Ask Universal AI Agent' : 'सार्वभौमिक किसान एआई से पूछें'}
+              </h2>
+              <p className="text-[11px] text-stone-500">
+                {language === 'en'
+                  ? 'Autonomous reasoning engine that orchestrates all 5 agronomy tools in one run'
+                  : 'फसल स्वास्थ्य, मौसम, खाद, मंडी और सरकारी बीमा को एक साथ हल करने वाला एआई'}
+              </p>
+            </div>
           </div>
-          <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-            {language === 'en' ? 'Orchestrates 5 Tools' : 'पाँचों टूल्स का समन्वयक'}
-          </span>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsKendraOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 hover:border-emerald-700 bg-stone-50 hover:bg-emerald-50 text-xs font-bold text-stone-800 transition-colors"
+            >
+              <Calculator className="w-3.5 h-3.5 text-emerald-800" />
+              <span>{language === 'hi' ? 'खाद-बीज हिसाब' : 'Field Calculators'}</span>
+            </button>
+
+            <button
+              onClick={() => setIsDoctorOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 hover:border-teal-700 bg-stone-50 hover:bg-teal-50 text-xs font-bold text-stone-800 transition-colors"
+            >
+              <Wheat className="w-3.5 h-3.5 text-teal-800" />
+              <span>{language === 'hi' ? 'फसल डॉक्टर' : 'Crop Doctor'}</span>
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleQuickSubmit} className="space-y-3">
@@ -164,11 +190,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               value={quickInput}
               onChange={(e) => setQuickInput(e.target.value)}
               placeholder={t.dashboard.agentQuickPromptPlaceholder}
-              className="w-full px-4 py-3.5 pr-32 text-xs sm:text-sm border border-stone-300 rounded-xl bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 text-stone-900 placeholder:text-stone-400"
+              className="w-full px-4 py-3.5 pr-36 text-xs sm:text-sm border border-stone-300 rounded-2xl bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 text-stone-900 placeholder:text-stone-400 font-medium"
             />
             <button
               type="submit"
-              className="absolute right-2 top-2 bottom-2 px-4 bg-emerald-800 text-white rounded-lg text-xs font-semibold hover:bg-emerald-900 transition-colors flex items-center gap-1.5"
+              className="absolute right-2 top-2 bottom-2 px-4 bg-emerald-800 text-white rounded-xl text-xs font-bold hover:bg-emerald-900 transition-colors flex items-center gap-1.5 shadow-xs"
             >
               <span>{t.dashboard.askAgentBtn}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -179,11 +205,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Dropzone shortcut */}
         <div
           onClick={() => onSelectTab('universal-agent')}
-          className="border-2 border-dashed border-stone-200 hover:border-emerald-600 rounded-xl p-4 text-center cursor-pointer bg-stone-50/50 hover:bg-emerald-50/20 transition-colors flex items-center justify-center gap-3"
+          className="border-2 border-dashed border-stone-200 hover:border-emerald-600 rounded-2xl p-4 text-center cursor-pointer bg-stone-50/50 hover:bg-emerald-50/20 transition-colors flex items-center justify-center gap-3"
         >
-          <Upload className="w-4 h-4 text-emerald-800" />
+          <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center">
+            <Upload className="w-4 h-4" />
+          </div>
           <div className="text-left">
-            <span className="text-xs font-semibold text-stone-800 block">
+            <span className="text-xs font-bold text-stone-800 block">
               {t.dashboard.dropzoneTitle}
             </span>
             <span className="text-[11px] text-stone-500 block">
@@ -193,15 +221,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Five Specialized Agricultural Intelligence Feature Cards */}
+      {/* 4. Five Specialized Agricultural Intelligence Feature Cards */}
       <div className="space-y-4">
-        <div>
-          <h2 className="text-lg font-bold text-stone-900 tracking-tight">
-            {t.dashboard.toolsTitle}
-          </h2>
-          <p className="text-xs text-stone-500">
-            {t.dashboard.toolsSubtitle}
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-black text-stone-900 tracking-tight">
+              {t.dashboard.toolsTitle}
+            </h2>
+            <p className="text-xs text-stone-500">
+              {t.dashboard.toolsSubtitle}
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -211,7 +241,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={card.id}
                 onClick={() => onSelectTab(card.id)}
-                className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-2xs hover:border-emerald-700/60 transition-all cursor-pointer group flex flex-col justify-between"
+                className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs hover:border-emerald-700/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
               >
                 {card.image && (
                   <div className="h-40 bg-stone-100 overflow-hidden relative">
@@ -219,9 +249,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       src={card.image}
                       alt={card.title}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-stone-900/70 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
+                    <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-stone-900/80 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
                       {card.badge}
                     </div>
                   </div>
@@ -234,7 +264,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
                           {card.badge}
                         </span>
-                        <Icon className="w-5 h-5 text-emerald-800" />
+                        <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                          <Icon className="w-4 h-4" />
+                        </div>
                       </div>
                     )}
 
@@ -248,7 +280,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                   <div className="pt-2 flex items-center justify-between text-xs font-semibold text-emerald-800 group-hover:text-emerald-950">
                     <span>
-                      {language === 'en' ? 'Launch Tool' : 'टूल प्रारंभ करें'}
+                      {language === 'en' ? 'Launch Dedicated Tool' : 'टूल प्रारंभ करें'}
                     </span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -259,22 +291,25 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* How KISAN CULTURE Works */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-2xs space-y-6">
+      {/* 5. Kisan Emergency Helplines Bar */}
+      <KisanHelplineBar language={language} />
+
+      {/* 6. How KISAN CULTURE Works */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-2xs space-y-6">
         <div>
-          <h2 className="text-base font-bold text-stone-900 tracking-tight">
+          <h2 className="text-base font-extrabold text-stone-900 tracking-tight">
             {t.dashboard.howItWorksTitle}
           </h2>
           <p className="text-xs text-stone-500">
             {language === 'en'
-              ? 'Engineered specifically for Indian smallholder and progressive farmers.'
-              : 'भारतीय किसानों की जमीनी वास्तविकताओं के अनुसार तैयार की गई प्रणाली।'}
+              ? 'Engineered specifically for Indian smallholder and progressive farmers with grounded ICAR agronomic rules.'
+              : 'भारतीय किसानों की जमीनी वास्तविकताओं के अनुसार तैयार की गई वैज्ञानिक कार्यप्रणाली।'}
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 space-y-1.5">
-            <span className="font-bold text-emerald-900 block text-sm">
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-1.5 hover:border-emerald-300 transition-colors">
+            <span className="font-bold text-emerald-950 block text-sm">
               {t.dashboard.step1Title}
             </span>
             <p className="text-stone-600 leading-relaxed text-[11px]">
@@ -282,8 +317,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 space-y-1.5">
-            <span className="font-bold text-emerald-900 block text-sm">
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-1.5 hover:border-emerald-300 transition-colors">
+            <span className="font-bold text-emerald-950 block text-sm">
               {t.dashboard.step2Title}
             </span>
             <p className="text-stone-600 leading-relaxed text-[11px]">
@@ -291,8 +326,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 space-y-1.5">
-            <span className="font-bold text-emerald-900 block text-sm">
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-1.5 hover:border-emerald-300 transition-colors">
+            <span className="font-bold text-emerald-950 block text-sm">
               {t.dashboard.step3Title}
             </span>
             <p className="text-stone-600 leading-relaxed text-[11px]">
@@ -300,8 +335,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 space-y-1.5">
-            <span className="font-bold text-emerald-900 block text-sm">
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-1.5 hover:border-emerald-300 transition-colors">
+            <span className="font-bold text-emerald-950 block text-sm">
               {t.dashboard.step4Title}
             </span>
             <p className="text-stone-600 leading-relaxed text-[11px]">
@@ -311,12 +346,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Recent Generated Reports Section */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-2xs space-y-4">
+      {/* 7. Recent Generated Reports Section */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-stone-900">
-            {t.dashboard.recentReports}
-          </h2>
+          <div>
+            <h2 className="text-base font-extrabold text-stone-900">
+              {t.dashboard.recentReports}
+            </h2>
+            <p className="text-xs text-stone-500">
+              {language === 'hi' ? 'आपके द्वारा तैयार की गई विस्तृत कृषि कार्ययोजनाएं' : 'Comprehensive agronomic advisory dossiers'}
+            </p>
+          </div>
           <button
             onClick={() => onSelectTab('reports')}
             className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
@@ -337,10 +377,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={rep.reportId}
                 onClick={() => onOpenReport(rep)}
-                className="p-4 rounded-xl border border-stone-200 hover:border-emerald-300 cursor-pointer bg-stone-50/50 hover:bg-emerald-50/20 transition-colors text-xs space-y-1.5"
+                className="p-5 rounded-2xl border border-stone-200 hover:border-emerald-400 cursor-pointer bg-stone-50/50 hover:bg-emerald-50/20 transition-all text-xs space-y-2 shadow-2xs"
               >
                 <div className="flex items-center justify-between text-[11px] text-stone-400 font-mono">
-                  <span>{rep.reportId}</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold">{rep.reportId}</span>
                   <span>{rep.generatedAt}</span>
                 </div>
                 <h3 className="font-bold text-stone-900 text-sm">{rep.title}</h3>
@@ -352,6 +392,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <KisanKendraModal
+        isOpen={isKendraOpen}
+        onClose={() => setIsKendraOpen(false)}
+        language={language}
+      />
+
+      <CropDoctorModal
+        isOpen={isDoctorOpen}
+        onClose={() => setIsDoctorOpen(false)}
+        language={language}
+        onSelectSymptomForAI={handleSymptomSelectForAI}
+      />
     </div>
   );
 };

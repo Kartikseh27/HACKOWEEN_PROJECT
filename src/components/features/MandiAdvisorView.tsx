@@ -24,7 +24,9 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
+  Sparkles,
 } from 'lucide-react';
+import { KisanVoicePlayer } from '../culture/KisanVoicePlayer';
 
 interface MandiAdvisorViewProps {
   language: Language;
@@ -357,13 +359,22 @@ export const MandiAdvisorView: React.FC<MandiAdvisorViewProps> = ({
                 </h2>
               </div>
 
-              <button
-                onClick={handleExportReport}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-800 text-white rounded-lg text-xs font-semibold hover:bg-emerald-900 transition-colors shadow-2xs"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Export Mandi Dossier</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <KisanVoicePlayer
+                  text={`मंडी लाभ विश्लेषण: कुल आमदनी ₹${calculationResult.grossRevenue}। परिवहन व मंडी खर्च ₹${calculationResult.totalExpenses} कटने के बाद आपके हाथ में शुद्ध मुनाफा ₹${calculationResult.netReturn} आएगा, यानी ₹${calculationResult.effectivePricePerQtl} प्रति क्विंटल।`}
+                  language={language}
+                  label={language === 'hi' ? 'मुनाफा विश्लेषण सुनें' : 'Listen Profit'}
+                  compact
+                />
+
+                <button
+                  onClick={handleExportReport}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-800 text-white rounded-lg text-xs font-semibold hover:bg-emerald-900 transition-colors shadow-2xs"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Export Mandi Dossier</span>
+                </button>
+              </div>
             </div>
 
             {/* KPI Realization Cards */}

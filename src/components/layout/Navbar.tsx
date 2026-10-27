@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Language, NavigationTab } from '../../types';
 import { translations } from '../../i18n/translations';
-import { Bell, Globe, Menu, X, Sprout } from 'lucide-react';
+import { Bell, Globe, Menu, X, Sprout, Wheat } from 'lucide-react';
 
 interface NavbarProps {
   currentTab: NavigationTab;
@@ -27,7 +27,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 bg-[#F8F9F5] border-b border-stone-200">
+    <header className="sticky top-0 z-30 bg-[#F8F9F5] border-b border-stone-200 shadow-2xs">
+      {/* Subtle traditional agricultural accent strip */}
+      <div className="h-1 bg-gradient-to-r from-amber-500 via-white to-emerald-600 w-full" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
         {/* Zone 1: Brand Wordmark */}
         <div className="flex items-center gap-3 shrink-0">
@@ -41,14 +43,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           <button
             onClick={() => onSelectTab('dashboard')}
-            className="flex items-center gap-2 text-left group"
+            className="flex items-center gap-2.5 text-left group"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-800 text-emerald-50 flex items-center justify-center font-bold text-sm shadow-sm">
-              <Sprout className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-800 to-amber-700 text-amber-200 flex items-center justify-center font-bold text-sm shadow-xs border border-amber-400/40 group-hover:scale-105 transition-transform">
+              <Wheat className="w-5 h-5 text-amber-300" />
             </div>
-            <span className="text-lg font-bold tracking-tight text-emerald-950 font-sans whitespace-nowrap shrink-0">
-              KISAN CULTURE
-            </span>
+            <div>
+              <span className="text-base sm:text-lg font-black tracking-tight text-emerald-950 font-sans whitespace-nowrap block leading-tight">
+                KISAN CULTURE
+              </span>
+              <span className="text-[10px] text-amber-800 font-bold tracking-wider block leading-tight">
+                {language === 'hi' ? 'किसान संस्कृति · अन्नदाता' : 'Smarter Farming'}
+              </span>
+            </div>
           </button>
         </div>
 

@@ -24,7 +24,9 @@ import {
   Info,
   ShieldCheck,
   Stethoscope,
+  Sparkles,
 } from 'lucide-react';
+import { KisanVoicePlayer } from '../culture/KisanVoicePlayer';
 
 interface CropHealthViewProps {
   language: Language;
@@ -214,6 +216,66 @@ export const CropHealthView: React.FC<CropHealthViewProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
+        </div>
+      </div>
+
+      {/* 1-Click Real Field Sample Presets */}
+      <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-amber-700" />
+          <span className="text-xs font-bold text-amber-950">
+            {language === 'hi' ? 'सच्चे खेत के नमूने (1-क्लिक से भरें):' : 'Try Real Field Inspection Presets:'}
+          </span>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setCrop('Wheat');
+              setVariety('HD-2967');
+              setGrowthStage('Tillering / Jointing (35-45 days)');
+              setSelectedSymptoms(['Yellowing of leaves (Chlorosis)']);
+              setDurationDays(6);
+              setSeverity('moderate');
+              setDescription('Yellowing began on lower leaves and is spreading upwards in patches. Soil pH is around 7.8.');
+            }}
+            className="px-2.5 py-1 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+          >
+            🌾 {language === 'hi' ? 'गेहूं में पीलापन (Wheat Yellowing)' : 'Wheat Yellowing Sample'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setCrop('Mustard');
+              setVariety('Pusa Bold');
+              setGrowthStage('Flowering / Pod formation');
+              setSelectedSymptoms(['Brown spots / Rust pustules', 'Tip burn / margin scorching']);
+              setDurationDays(4);
+              setSeverity('severe');
+              setDescription('Concentric brown leaf spots with yellow halo appearing during foggy weather.');
+            }}
+            className="px-2.5 py-1 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+          >
+            🟡 {language === 'hi' ? 'सरसों झुलसा (Mustard Blight)' : 'Mustard Blight Sample'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setCrop('Paddy');
+              setVariety('Pusa Basmati 1121');
+              setGrowthStage('Vegetative Tillering');
+              setSelectedSymptoms(['Stem borer holes / dead hearts', 'Wilting / Drooping in afternoon']);
+              setDurationDays(8);
+              setSeverity('severe');
+              setDescription('Central shoots drying out into dead-hearts. Small holes visible near lower node of stem.');
+            }}
+            className="px-2.5 py-1 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+          >
+            🌾 {language === 'hi' ? 'धान तना छेदक (Paddy Stem Borer)' : 'Paddy Borer Sample'}
+          </button>
         </div>
       </div>
 
@@ -489,13 +551,26 @@ export const CropHealthView: React.FC<CropHealthViewProps> = ({
                 </h2>
               </div>
 
-              <button
-                onClick={handleCreateReport}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-800 text-white rounded-lg text-xs font-semibold hover:bg-emerald-900 transition-colors shadow-2xs"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Save & Print Report</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <KisanVoicePlayer
+                  text={
+                    analysisResult.rankedCauses[0]
+                      ? `${crop} फसल की जांच रिपोर्ट। सबसे संभावित कारण: ${analysisResult.rankedCauses[0].name}। रोकथाम के कदम: ${analysisResult.immediateSteps.slice(0, 2).join('. ')}। संस्तुति: ${analysisResult.rankedCauses[0].recommendedActions.slice(0, 2).join('. ')}`
+                      : analysisResult.confidenceExplanation
+                  }
+                  language={language}
+                  label={language === 'hi' ? 'जांच रिपोर्ट सुनें' : 'Listen Diagnosis'}
+                  compact
+                />
+
+                <button
+                  onClick={handleCreateReport}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-800 text-white rounded-lg text-xs font-semibold hover:bg-emerald-900 transition-colors shadow-2xs"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Save & Print Report</span>
+                </button>
+              </div>
             </div>
 
             {/* Observed symptoms */}

@@ -20,6 +20,7 @@ import {
   X,
   Sprout,
   ShieldCheck,
+  Wheat,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -81,15 +82,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Sidebar Brand Header */}
         <div className="h-16 px-6 flex items-center justify-between border-b border-emerald-900/60 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-center font-bold">
-              <Sprout className="w-5 h-5 text-emerald-400" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-600/50 to-amber-600/40 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold">
+              <Wheat className="w-5 h-5 text-amber-300" />
             </div>
             <div>
-              <span className="text-base font-bold tracking-tight text-white block leading-tight font-sans">
+              <span className="text-base font-black tracking-tight text-white block leading-tight font-sans">
                 KISAN CULTURE
               </span>
-              <span className="text-[11px] text-emerald-300/80 tracking-wide block leading-tight">
-                {language === 'en' ? 'Agricultural Intelligence' : 'कृषि सहायता तंत्र'}
+              <span className="text-[11px] text-amber-300/90 font-bold tracking-wide block leading-tight">
+                {language === 'en' ? 'अन्नदाता सुखी भवः' : 'किसान संस्कृति · अन्नदाता'}
               </span>
             </div>
           </div>

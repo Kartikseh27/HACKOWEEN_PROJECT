@@ -25,7 +25,9 @@ import {
   FileText,
   ShieldCheck,
   ChevronRight,
+  Sparkles,
 } from 'lucide-react';
+import { KisanVoicePlayer } from '../culture/KisanVoicePlayer';
 
 interface SoilAdvisorViewProps {
   language: Language;
@@ -234,6 +236,72 @@ export const SoilAdvisorView: React.FC<SoilAdvisorViewProps> = ({
               ))}
             </div>
           )}
+        </div>
+
+        {/* 1-Click Soil Test Scenarios */}
+        <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-700" />
+            <span className="text-xs font-bold text-amber-950">
+              {language === 'hi' ? 'मिट्टी जांच नमूने (1-क्लिक से भरें):' : 'Try Soil Health Presets:'}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setPh(8.4);
+                setEc(1.2);
+                setOc(0.32);
+                setNitrogen(180);
+                setPhosphorus(11);
+                setPotassium(210);
+                setZinc(0.42);
+                setIron(4.1);
+                setTexture('loamy');
+              }}
+              className="px-2.5 py-1 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+            >
+              🧂 {language === 'hi' ? 'क्षारीय मिट्टी (pH 8.4 Alkaline)' : 'Alkaline Soil (pH 8.4)'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPh(7.2);
+                setEc(0.5);
+                setOc(0.68);
+                setNitrogen(320);
+                setPhosphorus(22);
+                setPotassium(290);
+                setZinc(0.85);
+                setIron(7.5);
+                setTexture('loamy');
+              }}
+              className="px-2.5 py-1 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+            >
+              🪴 {language === 'hi' ? 'उपजाऊ दोमट (pH 7.2 Balanced)' : 'Fertile Loam (pH 7.2)'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPh(5.6);
+                setEc(0.3);
+                setOc(0.45);
+                setNitrogen(195);
+                setPhosphorus(9);
+                setPotassium(160);
+                setZinc(0.5);
+                setIron(11.2);
+                setTexture('clayey');
+              }}
+              className="px-2.5 py-1 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+            >
+              🔴 {language === 'hi' ? 'अम्लीय मिट्टी (pH 5.6 Acidic)' : 'Acidic Soil (pH 5.6)'}
+            </button>
+          </div>
         </div>
 
         {/* Manual Parameters Grid */}
@@ -451,13 +519,22 @@ export const SoilAdvisorView: React.FC<SoilAdvisorViewProps> = ({
                 </h2>
               </div>
 
-              <button
-                onClick={handleCreateReport}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-800 text-white rounded-lg text-xs font-semibold hover:bg-amber-900 transition-colors shadow-2xs"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print Soil Dossier</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <KisanVoicePlayer
+                  text={`मृदा स्वास्थ्य रिपोर्ट। समग्र श्रेणी: ${analysisResult.overallHealthGrade.replace('_', ' ')}। जैविक खाद सलाह: ${analysisResult.organicMatterAdvice}। ${analysisResult.fertilizerCorrectionGuidance.slice(0, 2).join('. ')}`}
+                  language={language}
+                  label={language === 'hi' ? 'मिट्टी रिपोर्ट सुनें' : 'Listen Soil Report'}
+                  compact
+                />
+
+                <button
+                  onClick={handleCreateReport}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-800 text-white rounded-lg text-xs font-semibold hover:bg-amber-900 transition-colors shadow-2xs"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print Soil Dossier</span>
+                </button>
+              </div>
             </div>
 
             {/* Overall Health Grade */}
