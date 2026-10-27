@@ -259,6 +259,13 @@ export interface AgentTaskStep {
   durationMs?: number;
 }
 
+export interface ReactStep {
+  stepNumber: number;
+  thought: string;
+  action: string;
+  observation: string;
+}
+
 export interface UniversalAgentExecutionResult {
   requestId: string;
   timestamp: string;
@@ -297,6 +304,7 @@ export interface UniversalAgentExecutionResult {
   }>;
   executionEngine?: string;
   n8nConnected?: boolean;
+  reactSteps?: ReactStep[];
 }
 
 // 7. Reports & Conversations

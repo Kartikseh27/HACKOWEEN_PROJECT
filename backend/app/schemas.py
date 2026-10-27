@@ -306,6 +306,13 @@ class UniversalAgentInputSchema(BaseModel):
     engine: Optional[Literal['native', 'n8n']] = 'native'
 
 
+class ReactStepSchema(BaseModel):
+    stepNumber: int
+    thought: str
+    action: str
+    observation: str
+
+
 class UniversalAgentExecutionResultSchema(BaseModel):
     requestId: str
     timestamp: str
@@ -322,6 +329,7 @@ class UniversalAgentExecutionResultSchema(BaseModel):
     consequentialActionsPendingApproval: Optional[List[ConsequentialActionSchema]] = []
     executionEngine: Optional[str] = "native_universal_agent"
     n8nConnected: Optional[bool] = False
+    reactSteps: Optional[List[ReactStepSchema]] = []
 
 
 # -------------------------------------------------------------
