@@ -20,12 +20,20 @@ import {
 } from '../types';
 
 const API_TIMEOUT = 30000;
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
+
+function getEndpoint(path: string): string {
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${API_BASE_URL}${cleanPath}`;
+}
 
 async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+  const fullUrl = getEndpoint(url);
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), API_TIMEOUT);
   try {
-    const response = await fetch(url, {
+    const response = await fetch(fullUrl, {
       ...options,
       signal: controller.signal,
     });

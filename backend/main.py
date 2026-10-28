@@ -46,10 +46,11 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure CORS for your React Vite Frontend
+# Configure CORS for React Vite Frontend & Vercel deployments
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins + ["*"],  # Permits local development ports
+    allow_origins=[o for o in settings.cors_origins if o != "*"] or ["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
