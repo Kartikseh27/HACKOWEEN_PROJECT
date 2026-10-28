@@ -1,0 +1,36 @@
+# Render Blueprint Specification for KISAN CULTURE
+# Deploy both the Python FastAPI Backend and the React 19 Frontend seamlessly.
+
+services:
+  # -------------------------------------------------------------
+  # 1. FastAPI Python Backend Web Service
+  # -------------------------------------------------------------
+  - type: web
+    name: kisan-culture-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: ENVIRONMENT
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # -------------------------------------------------------------
+  # 2. React 19 + Vite Static Site Frontend
+  # -------------------------------------------------------------
+  - type: web
+    name: kisan-culture-frontend
+    runtime: static
+    rootDir: .
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
