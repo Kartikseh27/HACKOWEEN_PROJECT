@@ -20,3 +20,4 @@ try {
   const proc = spawn('uvicorn', ['backend.main:app', '--host', '0.0.0.0', '--port', port], { stdio: 'inherit' });
   proc.on('exit', (code) => process.exit(code ?? 0));
 }
+

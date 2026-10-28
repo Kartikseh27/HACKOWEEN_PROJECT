@@ -9,6 +9,8 @@ from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_DB_FILE = BACKEND_DIR / "kisan_culture.db"
 
 
 class Settings(BaseSettings):
@@ -25,7 +27,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str = "sqlite:///./kisan_culture.db"
+    DATABASE_URL: str = f"sqlite:///{DEFAULT_DB_FILE}"
     
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173"
