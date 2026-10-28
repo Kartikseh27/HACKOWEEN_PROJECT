@@ -5,19 +5,61 @@
  * or whether this is a Python container running FastAPI with Uvicorn.
  */
 
-const { spawn } = require('child_process');
+import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
+import process from 'node:process';
 
+const require = createRequire(import.meta.url);
+
+let isExpressAvailable = false;
 try {
-  // Check if express is installed in node_modules
+  // Check if express is resolvable in node_modules
   require.resolve('express');
-  console.log('🚀 Starting KISAN CULTURE Node Fullstack Server (server.ts)...');
-  const proc = spawn('npx', ['tsx', 'server.ts'], { stdio: 'inherit' });
-  proc.on('exit', (code) => process.exit(code ?? 0));
-} catch (err) {
-  // Fallback for Render Python Web Service where pip install ran instead of npm install
-  console.log('🌾 Node dependencies not detected. Launching FastAPI Backend (Uvicorn)...');
-  const port = process.env.PORT || '8000';
-  const proc = spawn('uvicorn', ['backend.main:app', '--host', '0.0.0.0', '--port', port], { stdio: 'inherit' });
-  proc.on('exit', (code) => process.exit(code ?? 0));
+  isExpressAvailable = true;
+} catch {
+  isExpressAvailable = false;
 }
 
+const port = process.env.PORT || '8000';
+
+if (isExpressAvailable) {
+  console.log(`🚀 Starting KISAN CULTURE Node Server on port ${port}...`);
+  const proc = spawn('npx', ['tsx', 'server.ts'], {
+    stdio: 'inherit',
+    env: { ...process.env, PORT: String(port) },
+  });
+
+  proc.on('exit', (code) => {
+    process.exit(code ?? 0);
+  });
+
+  proc.on('error', (err) => {
+    console.error('Failed to spawn Node server via tsx:', err);
+    process.exit(1);
+  });
+} else {
+  console.log(`🌾 Node dependencies not detected. Launching FastAPI Backend (Uvicorn) on 0.0.0.0:${port}...`);
+  const proc = spawn('uvicorn', ['backend.main:app', '--host', '0.0.0.0', '--port', String(port)], {
+    stdio: 'inherit',
+    env: process.env,
+  });
+
+  proc.on('exit', (code) => {
+    process.exit(code ?? 0);
+  });
+
+  proc.on('error', (err) => {
+    console.warn('Direct uvicorn spawn failed, retrying with python3 -m uvicorn...', err.message);
+    const fallback = spawn('python3', ['-m', 'uvicorn', 'backend.main:app', '--host', '0.0.0.0', '--port', String(port)], {
+      stdio: 'inherit',
+      env: process.env,
+    });
+    fallback.on('exit', (fallbackCode) => {
+      process.exit(fallbackCode ?? 0);
+    });
+    fallback.on('error', (fallbackErr) => {
+      console.error('Failed to launch FastAPI backend with python3 -m uvicorn:', fallbackErr);
+      process.exit(1);
+    });
+  });
+}
